@@ -6,60 +6,34 @@ int main(int argc, char* argv[])
 {
   //-------------------
   std::vector<TString> thesamplelist;
+  std::vector<TString> thesamplelist_forreading;
   std::vector<TString > thevarlist; //Variables used in BDT
-  std::vector<TString > thesystlist;
   std::vector<TString > thechannellist;
   std::vector<TString > set_v_cut_name;
   std::vector<TString > set_v_cut_def;
   std::vector<bool > set_v_cut_IsUsedForBDT;
-  std::vector<int> v_color; //sample <-> color
   //-------------------
   
   
   
   int verbose = 2;
-  
+  std::string PlaceOfTuples = "/Users/ivanpari/Desktop/Playground/MVA/MVAWorker/Ntuples/"; //170223/MVAtrees/";
   // What are you doing?
-  bool doJetAssignment = false;
+  double number_of_fakes = 3;
   bool doTraining = false;
   bool doReading = false;
-  bool doCRcut = false;
-  bool doCRtree = false;
-  double cutValue = -999;
-  bool doBDTplotAll = false;
-  bool doBDTplot = false;
-  bool doCRhisto = false;
-  bool doPSdataTemplate = false;
-  bool doBDTdraw = false;
-  bool doBDTdrawAll = false;
-  bool OpenGui = false;
-  bool IncludeFakes = true;
-  bool doPlotting = false;
-  bool doPlottingPerChannel = false;
+  bool createPSData = false;
+  TString psdata = "";
   TString bdt_type = "BDT"; //'BDT' or 'BDTttZ' depending on the region (for theta disambiguation) for training!
-  TString template_name = "mWt"; //Either 'BDT', 'BDTttZ', 'mWt' or 'm3l'
-  bool fakes_summed_channels = false; //Sum uuu/eeu & eee/uue --> Double the fake stat. ! ONLY FOR TEMPLATES NOT CR
-  bool doBDTControl = false;
-  
-  //Used to re-scale every weights in the code by a lumi factor. (NB : default value is 2015 / 7.6.x lumi = 2.26 !)
-  double set_luminosity =36;// 20; //in fb-1 lumi to be expected
-  //Binning to be used for *template* production
+  TString region_name = "singletop";
   int nofbin_templates = 10;
+  TString coupling = "Zut";
   
   //Use MC fakes or data-driven fakes)
   bool fakes_from_data = false;
   
   //If true, use real data sample to create *templates* (BDT, mWt, ...) / else, use pseudodata !
   bool real_data_templates = false;
-  
-  //If true, creates templates for different regions & sets of cuts --> Optimization studies. Cuts can be tuned below, in the "Optimization" part.
-  bool do_optimization_scan = false; //Not properly implemented in the main() yet !
-  
-  float cut_BDT_CR =  -999;
-  bool cut_on_BDT = false;
-  bool use_pseudodata_CR_plots = false;
-  
-  
   if(verbose > 2)
   {
     cout << " The list of arguments are: " << endl;
@@ -71,83 +45,33 @@ int main(int argc, char* argv[])
   for(int iarg = 0; iarg < argc && argc>1 ; iarg++){
     std::string argval=argv[iarg];
     if(argval=="--help" || argval =="--h"){
-      cout << "* Settings * " <<endl;
-      cout << "--RealData: do not use PSdata" << endl;
-      cout << "--DataDrivenFakes: do not use MC fakes" << endl;
-      cout << "--SetLumi lumi: rescale the lumi to" << endl;
-      cout << "--SetBins bins: set nb of bins for the template" << endl;
-      cout << "--SetVerbose Verbose: set details of output statments" << endl;
-      cout << "--SetBDTcut cut" << endl;
-      cout << endl;
       cout << "* Methods in order of execution * " <<endl;
       cout << "--Train Template" << endl;
-      cout << "--Read Template SumFakes/NoSumFakes: do reading of the trained template. Sum fakes per 2 for increase of stats. Needs input from Training" << endl;
-      cout << "--PsDataTemplate Template: needs input from Read" << endl;
-      cout << "--BDTcontrol Template" << endl;
-      cout << "--CRcut: determine CR cut, needs input from Read" << endl;
-      cout << "--CRtree CutOnBDT/NoCutOnBDT UsePSdata/NoPSdata: needs input from CRcut and Read" << endl;
-      cout << "--CRhisto UsePSdata/NoPSdata: needs input from CRtree" << endl;
-      cout << "--Plot All/NotAll Template" << endl;
-      
-      
+      cout << "--Read Template" << endl;
+      cout << "--Region region" << endl;
+      cout << "--Coupling coupling" << endl;
+      cout << "--PSData what" << endl;
       return 0;
     }
-    else if(argval =="--Plot"){
-      iarg++; argval = argv[iarg];
-      if(argval =="All") doPlotting = true;
-      if(argval == "NotAll") doPlottingPerChannel = true;
-      iarg++;
-      template_name = argv[iarg];
-    }
     else if(argval == "--Train"){ doTraining = true; iarg++; bdt_type = argv[iarg]; cout << bdt_type << endl; }
-    else if(argval == "--Read"){
-      doReading = true;
+    else if(argval == "--PSData"){ createPSData = true; iarg++;  psdata = argv[iarg]; cout << "PSdata for " << psdata << endl;  }
+    else if(argval == "--Read"){ doReading = true; iarg++; bdt_type = argv[iarg]; cout << bdt_type << endl;}
+    else if(argval == "--Region"){
       iarg++;
-      template_name = argv[iarg];
-      bdt_type = argv[iarg];
+      region_name = argv[iarg];
+    }
+    else if(argval == "--Coupling"){
       iarg++;
-      argval=argv[iarg];
-      if(argval == "SumFakes") {fakes_summed_channels = true;}
-      if(argval == "NoSumFakes") {fakes_summed_channels = false;}
+       coupling = argv[iarg];
     }
-    else if(argval == "--CRcut"){ doCRcut = true; }
-    else if(argval == "--CRtree"){
-      doCRtree = true;
-      iarg++; argval=argv[iarg];
-      if(argval =="CutOnBDT") {cut_on_BDT = true;}
-      else if(argval =="NoCutOnBDT"){cut_on_BDT = false;}
-      iarg++; argval=argv[iarg];
-      if(argval=="UsePSdata") {use_pseudodata_CR_plots = true;  }
-      else if(argval=="NoPsdata") {use_pseudodata_CR_plots = false;  }
-    }
-    else if(argval == "--CRhisto"){
-      doCRhisto = true;
-      iarg++; argval=argv[iarg];
-      if(argval=="UsePSdata") {use_pseudodata_CR_plots = true; fakes_from_data = false; }
-      else if(argval=="NoPsdata") {use_pseudodata_CR_plots = false; fakes_from_data = true; }
-    }
-    else if(argval == "--PlotBDTall"){doBDTplotAll = true; }
-    else if(argval == "--PlotBDT"){doBDTplot = true; }
-    else if(argval == "--DrawBDTall"){doBDTdrawAll = true; }
-    else if(argval == "--DrawBDT"){doBDTdraw = true; }
-    else if(argval == "--RealData"){ real_data_templates = true; }
-    else if(argval == "--DataDrivenFakes"){ fakes_from_data = true;}
-    else if(argval == "--OpenGui"){OpenGui = true; }
-    else if(argval == "--IncludeFakes"){IncludeFakes = true;}
-    else if(argval == "--SetLumi"){ iarg++; set_luminosity = std::stoi(argv[iarg]); }
-    else if(argval == "--SetBins"){ iarg++; nofbin_templates = std::stoi(argv[iarg]); }
-    else if(argval == "--PsDataTemplate") {doPSdataTemplate = true; iarg++; template_name = argv[iarg]; bdt_type = argv[iarg];  }
-    else if(argval == "--BDTcontrol") {doBDTControl = true; iarg++; template_name = argv[iarg]; bdt_type = argv[iarg];  }
-    else if(argval == "--SetVerbose"){iarg++; verbose = std::stoi(argv[iarg]);}
-    else if(argval == "--SetBDTcut"){iarg++; cut_BDT_CR = std::stof(argv[iarg]);}
+ 
     else if(argval == ""){cerr << "ERROR no arguments given" << endl; return 0; }
   }
   
   
-  
+  bdt_type = bdt_type + "_" + region_name + "_" + coupling;
   
   cout<<endl<<BOLD(FYEL("##################################"))<<endl;
-  cout<<FYEL("---TEMPLATE --- ")<< template_name <<  endl;
   cout<<FYEL("---BDT type --- ")<< bdt_type <<  endl;
   cout<<BOLD(FYEL("##################################"))<<endl<<endl;
   
@@ -167,15 +91,18 @@ int main(int argc, char* argv[])
   //ex: set_v_cut_name.push_back("NBJets"); set_v_cut_def.push_back(">0 && <4");
   //NB : * WZ CR --> >0j & ==0bj // * ttZ CR --> >1j & >1bj // * SR ---> >0j & ==1bj //
   //-------------------
-  set_v_cut_name.push_back("met_Pt");                  set_v_cut_def.push_back(">30");            set_v_cut_IsUsedForBDT.push_back(true);
-  //set_v_cut_name.push_back("mWt");                    set_v_cut_def.push_back(">20");            set_v_cut_IsUsedForBDT.push_back(true);
-  if(template_name.Contains("BDT") || bdt_type.Contains("BDT")){
-    set_v_cut_name.push_back("nJets");                  set_v_cut_def.push_back(">1");            set_v_cut_IsUsedForBDT.push_back(false);
-    set_v_cut_name.push_back("nJets_CSVL");                 set_v_cut_def.push_back(">=1");            set_v_cut_IsUsedForBDT.push_back(false);
-  }
-  else if(template_name.Contains("mWt") || bdt_type.Contains("mWt")){
-    set_v_cut_name.push_back("nJets");                  set_v_cut_def.push_back(">0 && <3");            set_v_cut_IsUsedForBDT.push_back(false);
-    set_v_cut_name.push_back("nJets_CSVL");                 set_v_cut_def.push_back("==0");            set_v_cut_IsUsedForBDT.push_back(false);
+  if( bdt_type.Contains("BDT")){
+    // tt signal nJets > 1, nBJets >= 1
+    // ST signal nJets == 1, nBJets == 1
+    //set_v_cut_name.push_back("nJets");                  set_v_cut_def.push_back(">1");            set_v_cut_IsUsedForBDT.push_back(false);
+    // set_v_cut_name.push_back("nJets_CSVL");                 set_v_cut_def.push_back(">=1");            set_v_cut_IsUsedForBDT.push_back(false);
+    if(region_name.Contains("singletop")){
+      set_v_cut_name.push_back("MVA_region");                 set_v_cut_def.push_back("==0");            set_v_cut_IsUsedForBDT.push_back(false);
+      // set_v_cut_name.push_back("MVA_Wlep_Charge");            set_v_cut_def.push_back(">0");              set_v_cut_IsUsedForBDT.push_back(false);
+      
+    }
+    
+    if(region_name.Contains("toppair")) set_v_cut_name.push_back("MVA_region");                 set_v_cut_def.push_back("==1");            set_v_cut_IsUsedForBDT.push_back(false);
   }
   
   
@@ -207,31 +134,59 @@ int main(int argc, char* argv[])
   //-------------------
   //Sample order is important in function Read (so it knows which are the fake samples it must sum) and in Draw_Control_Plots (see explanation in code)
   //DATA --- THE DATA SAMPLE MUST BE UNIQUE AND IN FIRST POSITION
-  //thesamplelist.push_back("Data");
+  // thesamplelist_forreading.push_back("data");
+  
   
   //Signal
-  thesamplelist.push_back("NP_overlay_ST_FCNC_zut");             v_color.push_back(kRed+1);
+  //thesamplelist.push_back("NP_overlay_ST_FCNC_zut");             v_color.push_back(kRed+1);
   //  thesamplelist.push_back("TT_TopZkZct");             v_color.push_back(kRed+1);
+  if(coupling.Contains("Zct")){
+    if(region_name.Contains("singletop")){
+      thesamplelist.push_back("NP_overlay_ST_FCNC_zct");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
+    }
+    else{
+      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+      thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+    }
+  }
+
+  if(coupling.Contains("Zut")) {
+    if(region_name.Contains("singletop")){
+      thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+    }
+    else{
+      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+      thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+    }
+  }
   
   //BKG
-  thesamplelist.push_back("tZq");             v_color.push_back(kGreen+2);
-  thesamplelist.push_back("WZTo3LNu");          v_color.push_back(11);
-  thesamplelist.push_back("ZZTo4L");              v_color.push_back(kYellow);
-  thesamplelist.push_back("ttZ");             v_color.push_back(kRed);
-  thesamplelist.push_back("STtW_top");         v_color.push_back(kBlack);
-  thesamplelist.push_back("STtW_atop"); v_color.push_back(kBlack);
-  thesamplelist.push_back("ttHToNonbb");           v_color.push_back(kRed+1);
-  thesamplelist.push_back("tWll");                v_color.push_back(kCyan);
-  thesamplelist.push_back("TTWJetsToLNu_amc");                v_color.push_back(kCyan);
-  thesamplelist.push_back("tWll");                v_color.push_back(kCyan);
-  thesamplelist.push_back("ZZZ_amc");                v_color.push_back(kCyan);
+  thesamplelist.push_back("tZq");
+  // thesamplelist.push_back("tHq");
+  thesamplelist.push_back("WZTo3LNu");
+  thesamplelist.push_back("ZZTo4L");
+  thesamplelist.push_back("ttZ");
+  //thesamplelist.push_back("TTZToQQ_amc");
+  thesamplelist.push_back("WZZ_amc");
+  // thesamplelist.push_back("STtW_atop");
+  //  thesamplelist.push_back("STs_amc");
+  // thesamplelist.push_back("STt_top_amc");
+  // thesamplelist.push_back("STt_atop_amc");
+  thesamplelist.push_back("ttH");
+  //thesamplelist.push_back("tWll");
+  thesamplelist.push_back("ttWJets");
+  //  thesamplelist.push_back("tWll");
+  thesamplelist.push_back("ZZZ_amc");
+ 
   
   //FAKES
-  // thesamplelist.push_back("Fakes");           v_color.push_back(kAzure-2); //Data-driven (DD)
-  //-- THESE 3 SAMPLES MUST BE THE LAST OF THE SAMPLE LIST FOR THE READER TO KNOW WHICH ARE THE MC FAKE SAMPLES !
-    thesamplelist.push_back("Zjets50");          v_color.push_back(kAzure-2); //MC
-    thesamplelist.push_back("TTJetsDilep");              v_color.push_back(kRed-1); //MC
-    thesamplelist.push_back("Zjets50");              v_color.push_back(kYellow); //MC
+  //thesamplelist_forreading.push_back("Fakes");
+  //other signal
+  
+  
+  
   //-------------------
   
   //-----------------------------------------------------------------------------------------
@@ -244,63 +199,92 @@ int main(int argc, char* argv[])
   //-----------------------------------------------------------------------------------------
   
   //-------------------
-  //NB : treat leaves/variables "Weight" and "Channel" separately
+  //NB : treat leaves/variables "Weight" and "Channel" and "region" separately in MVAtool
+  /*
+   thevarlist.push_back("MVA_lepton1_pt"); // corelated with Z boson pt
+   thevarlist.push_back("MVA_lepton2_pt");
+   thevarlist.push_back("MVA_SMbjet_pt"); // corelated with sm top
+   thevarlist.push_back("MVA_Zboson_eta");
+   thevarlist.push_back("MVA_m3l");
+   thevarlist.push_back("MVA_lepton0_pt"); // corelated with Z boson pt
+   thevarlist.push_back("MVA_TotalHt");
+   thevarlist.push_back("MVA_TotalInvMass"); // correlated with total HT
+   thevarlist.push_back("MVA_TotalHt_jet");
+   thevarlist.push_back("MVA_dRZSMtop");
+   thevarlist.push_back("MVA_dPhiZb");
+   thevarlist.push_back("MVA_dPhiZSMtop");
+   thevarlist.push_back("MVA_mWt");
+   thevarlist.push_back("MVA_Wboson_pt");
+   thevarlist.push_back("MVA_lepton0_eta");
+   thevarlist.push_back("MVA_met");
+   thevarlist.push_back("MVA_dRZb");
+   thevarlist.push_back("MVA_CosTheta");
+   thevarlist.push_back("MVA_CosTheta_alt");
+   thevarlist.push_back("MVA_dPhiZWlep");
+   thevarlist.push_back("MVA_TotalHt_lep");
+   thevarlist.push_back("MVA_SMtop_pt"); // corelated with Z boson pt
+   thevarlist.push_back("MVA_Zboson_M")
+   thevarlist.push_back("MVA_Wboson_M");
+   thevarlist.push_back("MVA_Wlep_pt");// is al in de vorige
+   thevarlist.push_back("MVA_lepton1_eta");
+   thevarlist.push_back("MVA_lepton2_eta");
+   
+   thevarlist.push_back("MVA_Wlep_eta");
+   thevarlist.push_back("MVA_Wboson_eta");
+   thevarlist.push_back("MVA_SMbjet_eta");
+   thevarlist.push_back("MVA_SMtop_M");
+   thevarlist.push_back("MVA_SMtop_eta");
+   
+   */
+  //thevarlist.push_back("MVA_channel");
+  // thevarlist.push_back("MVA_weight");
+  //thevarlist.push_back("MVA_region"); used as cut
   
   
-  thevarlist.push_back("FCNCtop_M");
-  //  thevarlist.push_back("bdisc_jet_1");
-  //  thevarlist.push_back("Wlep_M");
-  thevarlist.push_back("nJets_CSVM");
-  //  thevarlist.push_back("bdis_jet_2");
-  //  thevarlist.push_back("asym");--> check definiation
+  thevarlist.push_back("MVA_Zboson_pt");
+  thevarlist.push_back("MVA_dRWlepb"); // very good
+  thevarlist.push_back("MVA_dPhiWlepb"); // very good
+  thevarlist.push_back("MVA_Wlep_Charge"); // TO FIX --> used as cut?
+  thevarlist.push_back("MVA_charge_asym");
+  thevarlist.push_back("MVA_dRZWlep");
   
-  thevarlist.push_back("dPhiSMFCNCtop"); // corelated with dPhiZaddlep
-  thevarlist.push_back("dRSMFCNCtop");
-  // thevarlist.push_back("dRZAddLep");
-  thevarlist.push_back("dRZc");
-  thevarlist.push_back("dRZb");
-  thevarlist.push_back("dRWlepc");
-  thevarlist.push_back("dPhiWlepb"); // angle between l from W and sm b
-  // thevarlist.push_back("etaQ"); // charge asymetry defined as q(W)*|etaW|,
+  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+  thevarlist.push_back("MVA_mlb");
+
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_M");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dRZc");
+  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_dPhiZc");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsB_jet_1");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsL_jet_1");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsL_jet_0");
+  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_nJets_CharmL");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets_CharmM");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets_CharmT");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dRSMFCNCtop");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_NJets_CSVv2L");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_NJets_CSVv2M");
+  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_NJets_CSVv2T");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_eta");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_eta");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_phi");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_phi");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_pt");
+  if(region_name.Contains("toppair"))thevarlist.push_back("MVA_FCNCtop_pt");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dPhiWlepc");
+  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dPhiSMFCNCtop");
+  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_dRWlepc");
+  //  thevarlist.push_back("MVA_nJets");
+  // thevarlist.push_back("MVA_NJets_CSVv2M");
+  // thevarlist.push_back("MVA_NJets_CSVv2T");
+  
+  
+  // niet discriminerdend voor ST
   
   
   
-  
-  
-  //-------------------
-  
-  //-----------------------------------------------------------------------------------------
-  //                        _                                _     _
-  //    ___   _   _   ___  | |_    ___   _ __ ___     __ _  | |_  (_)   ___   ___
-  //   / __| | | | | / __| | __|  / _ \ | '_ ` _ \   / _` | | __| | |  / __| / __|
-  //   \__ \ | |_| | \__ \ | |_  |  __/ | | | | | | | (_| | | |_  | | | (__  \__ \
-  //   |___/  \__, | |___/  \__|  \___| |_| |_| |_|  \__,_|  \__| |_|  \___| |___/
-  //          |___/
-  //-----------------------------------------------------------------------------------------
-  
-  //-------------------
-  thesystlist.push_back(""); //Always keep it activated
-  
-  //Affect the variable distributions
-  // thesystlist.push_back("JER__plus"); thesystlist.push_back("JER__minus");
-  //thesystlist.push_back("JES__plus"); thesystlist.push_back("JES__minus");
-  
-  //Affect the event weight
-  //thesystlist.push_back("Q2__plus"); thesystlist.push_back("Q2__minus"); //NB : not included in ttZMad --> Use ttZ Madgraph for training, amcatnlo for the rest
-  //thesystlist.push_back("PU__plus"); thesystlist.push_back("PU__minus");
-  //thesystlist.push_back("MuEff__plus"); thesystlist.push_back("MuEff__minus");
-  //thesystlist.push_back("EleEff__plus"); thesystlist.push_back("EleEff__minus");
-  //B-tag syst
-  /*thesystlist.push_back("btag_lf__plus"); thesystlist.push_back("btag_lf__minus");
-   thesystlist.push_back("btag_hf__plus"); thesystlist.push_back("btag_hf__minus");
-   thesystlist.push_back("btag_hfstats1__plus"); thesystlist.push_back("btag_hfstats1__minus");
-   thesystlist.push_back("btag_lfstats1__plus"); thesystlist.push_back("btag_lfstats1__minus");
-   thesystlist.push_back("btag_hfstats2__plus"); thesystlist.push_back("btag_hfstats2__minus");
-   thesystlist.push_back("btag_lfstats2__plus"); thesystlist.push_back("btag_lfstats2__minus");
-   thesystlist.push_back("btag_cferr1__plus"); thesystlist.push_back("btag_cferr1__minus");
-   thesystlist.push_back("btag_cferr2__plus"); thesystlist.push_back("btag_cferr2__minus");*/
-  
-  //-------------------
   
   
   //-----------------------------------------------------------------------------------------
@@ -318,9 +302,10 @@ int main(int argc, char* argv[])
   //#############################################
   //  CREATE INSTANCE OF CLASS & INITIALIZE
   //#############################################
-  theMVAtool* MVAtool = new theMVAtool(thevarlist, thesamplelist, thesystlist, thechannellist, v_color, set_v_cut_name, set_v_cut_def, set_v_cut_IsUsedForBDT, nofbin_templates);
+  theMVAtool* MVAtool = new theMVAtool(thevarlist, thesamplelist, thesamplelist_forreading, thechannellist,  set_v_cut_name, set_v_cut_def, set_v_cut_IsUsedForBDT, nofbin_templates, PlaceOfTuples, region_name);
+  cout << "Place of tuples " << PlaceOfTuples << endl;
   if(MVAtool->stop_program) {return 1;}
-  MVAtool->Set_Luminosity(set_luminosity);
+  
   
   //#############################################
   // TRAINING
@@ -328,67 +313,20 @@ int main(int argc, char* argv[])
   if(doTraining){
     for(int i=0; i<thechannellist.size(); i++)
     {
-      //TString bdt_type = "BDT"; //'BDT' or 'BDTttZ' depending on the region (for theta disambiguation)
       MVAtool->Train_Test_Evaluate(thechannellist[i], bdt_type);
     }
   }
-  //#############################################
-  //  READING --- TEMPLATES CREATION
-  //#############################################
-  //   TString template_name = "mWt"; //Either 'BDT', 'BDTttZ', 'mWt' or 'm3l'
   if(doReading){
-    MVAtool->Read(template_name, fakes_from_data, real_data_templates, fakes_summed_channels);
-    
+     MVAtool->Read(bdt_type);
   }
   
-  if(!real_data_templates && doPSdataTemplate) {
-    MVAtool->Generate_PseudoData_Histograms_For_Templates(template_name, "All");
-    for(int ichan= 0 ; ichan < thechannellist.size() ; ichan++){
-      MVAtool->Generate_PseudoData_Histograms_For_Templates(template_name, thechannellist[ichan]);
-    }
-  }
-  
-  
-  if(doBDTControl)
-  {
-    
-    MVAtool->Draw_Control_Templates("uuu", fakes_from_data, false, template_name);
-    MVAtool->Draw_Control_Templates("uue", fakes_from_data, false, template_name);
-    MVAtool->Draw_Control_Templates("eeu", fakes_from_data, false, template_name);
-    MVAtool->Draw_Control_Templates("eee", fakes_from_data, false, template_name);
-    
-    
-  }
-  //#############################################
-  //  CONTROL TREES & HISTOGRAMS
-  //#############################################
-  if(doCRcut) cut_BDT_CR = MVAtool->Determine_Control_Cut();
-  // bool cut_on_BDT = false; bool use_pseudodata_CR_plots = false;
-  
-  if(doCRtree) MVAtool->Create_Control_Trees(fakes_from_data, cut_on_BDT, cut_BDT_CR, use_pseudodata_CR_plots);
-  if(doCRhisto){
-    MVAtool->Create_Control_Histograms(fakes_from_data, use_pseudodata_CR_plots); //NB : very long ! You should only activate necessary syst./var. !
-    
-    if(use_pseudodata_CR_plots) {MVAtool->Generate_PseudoData_Histograms_For_Control_Plots(fakes_from_data);}
-  }
-  //#############################################
-  //  DRAW PLOTS
-  //#############################################
-  if(doPlottingPerChannel){
+  if(createPSData){
+    MVAtool->PSDataCreator(psdata, "All", bdt_type);
     for(int i=0; i<thechannellist.size(); i++)
     {
-      MVAtool->Draw_ControlttZ_Plots(thechannellist[i], fakes_from_data, false); //Draw plots for the BDT CR
-      // MVAtool->Plot_Templates(thechannellist[i], template_name, false); //Plot the BDT distributions of MC & pseudo-data templates
+      MVAtool->PSDataCreator(psdata, thechannellist[i], bdt_type);
     }
   }
-  if(doPlotting){
-    cout << "*** Control plots ***" << endl;
-    //  MVAtool->Draw_Control_Plots_isis("", fakes_from_data, true); //Sum of 4 channels
-    cout << "*** Templates ***" << endl;
-    MVAtool->Plot_Templates("", template_name, true); //Sum of 4 channels
-  }
-  
-  
   
   //-------------------------------------------
   //    _____   _   _   ____

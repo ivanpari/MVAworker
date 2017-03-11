@@ -62,42 +62,34 @@ public :
 
 //Methods
 	theMVAtool();
-	theMVAtool(std::vector<TString >, std::vector<TString >, std::vector<TString>, std::vector<TString>, std::vector<int>, std::vector<TString>, std::vector<TString>, std::vector<bool>, int);
+  theMVAtool(std::vector<TString >, std::vector<TString >, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<TString>, std::vector<bool>, int, std::string, TString);
 	~theMVAtool(){delete reader;};
 
-	void Set_Luminosity(double); //Set the luminosity re-scaling factor to be used thoughout the code
+	
 	void Train_Test_Evaluate(TString, TString); //Train, Test, Evaluate BDT with MC samples
-	float Compute_Fake_Ratio(TString, bool); //Computes ratio of fakes in MC compared to data, to re-scale mTW template of fakes from data in Read()
-	int Read(TString, bool, bool, bool); //Produce templates of BDT, mTW (or else ?)
-	float Determine_Control_Cut(); //Determine at which discriminant value the cut should be applied, in order to keep mainly bkg
-	void Create_Control_Trees(bool, bool, double, bool); //Create new trees with events passing the cuts
-	void Create_Control_Histograms(bool, bool); //Use the trees created with Create_Control_Trees to create histograms in same file
-	int Generate_PseudoData_Histograms_For_Control_Plots(bool); //Idem, for replacing data and be able to plot control plots
-	int Generate_PseudoData_Histograms_For_Templates(TString,TString); //Generate pseudo-data from templates -> can simulate template fit without looking at real data
-	int Draw_Control_Plots(TString, bool, bool); //Draw control plots from the histograms obtained with Create_Control_Histograms()
-  int Draw_ControlttZ_Plots(TString, bool, bool);
-  int Draw_Control_Plots_isis(TString, bool, bool); //Draw control plots from the histograms obtained with Create_Control_Histograms()
-	int Plot_Templates(TString, TString, bool);
-  int Draw_Control_Templates(TString , bool , bool , TString );
-  void SetPermutations(TString, TString);
-
+	void Read(TString); //Produce templates of BDT, mTW (or else ?)
+  void PSDataCreator(TString, TString, TString);
   
-
+ 
 //Members
 	TMVA::Reader *reader;
 
+  TString placeOutputTraining;
+  TString placeOutputReading;
 	std::vector<TString> sample_list;
+  std::vector<TString> sample_listread;
 	std::vector<TString> data_list;
 	std::vector<TString> var_list; std::vector<float> vec_variables; //Contains as many floats as there are variables in var_list
-	std::vector<TString> syst_list;
 	std::vector<TString> channel_list;
 	std::vector<TString> v_cut_name; std::vector<TString> v_cut_def; std::vector<float> v_cut_float; std::vector<bool> v_cut_IsUsedForBDT;
-	std::vector<int> colorVector;
+  std::string PlaceOfTuples;
+  TString region_name;
+TString filename_suffix;
 
 	int nbin; //Control number of bins in BDT histogram
 	double luminosity_rescale;
 
-	TString filename_suffix;
+	
 
 	bool stop_program;
 };
