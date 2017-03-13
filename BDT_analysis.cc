@@ -1,4 +1,6 @@
 #include "theMVAtool.h"
+// run as
+// ./main --Train BDT --Read BDT --Region singletop --Coupling Zct --PSData BDT
 
 using namespace std;
 
@@ -62,9 +64,9 @@ int main(int argc, char* argv[])
     }
     else if(argval == "--Coupling"){
       iarg++;
-       coupling = argv[iarg];
+      coupling = argv[iarg];
     }
- 
+    
     else if(argval == ""){cerr << "ERROR no arguments given" << endl; return 0; }
   }
   
@@ -146,11 +148,11 @@ int main(int argc, char* argv[])
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
     }
     else{
-      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
-      thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zct");
+      thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
     }
   }
-
+  
   if(coupling.Contains("Zut")) {
     if(region_name.Contains("singletop")){
       thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
@@ -179,7 +181,7 @@ int main(int argc, char* argv[])
   thesamplelist.push_back("ttWJets");
   //  thesamplelist.push_back("tWll");
   thesamplelist.push_back("ZZZ_amc");
- 
+  
   
   //FAKES
   //thesamplelist_forreading.push_back("Fakes");
@@ -234,54 +236,147 @@ int main(int argc, char* argv[])
    thevarlist.push_back("MVA_SMbjet_eta");
    thevarlist.push_back("MVA_SMtop_M");
    thevarlist.push_back("MVA_SMtop_eta");
-   
+   thevarlist.push_back("MVA_Wlep_Charge"); // TO FIX --> used as cut?
    */
   //thevarlist.push_back("MVA_channel");
   // thevarlist.push_back("MVA_weight");
   //thevarlist.push_back("MVA_region"); used as cut
   
   
-  thevarlist.push_back("MVA_Zboson_pt");
-  thevarlist.push_back("MVA_dRWlepb"); // very good
-  thevarlist.push_back("MVA_dPhiWlepb"); // very good
-  thevarlist.push_back("MVA_Wlep_Charge"); // TO FIX --> used as cut?
-  thevarlist.push_back("MVA_charge_asym");
-  thevarlist.push_back("MVA_dRZWlep");
+  // TO ADD cdisc of b jet?
   
-  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-  thevarlist.push_back("MVA_mlb");
+  if(coupling.Contains("Zut") && region_name.Contains("singletop")){
+    thevarlist.push_back("MVA_Zboson_pt");
+    thevarlist.push_back("MVA_dRWlepb"); // very good
+    thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    thevarlist.push_back("MVA_charge_asym");
+    thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_mlb");
+  }
+  else if(coupling.Contains("Zct") && region_name.Contains("singletop")){
+    thevarlist.push_back("MVA_Zboson_pt");
+    thevarlist.push_back("MVA_dRWlepb"); // very good
+    thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    thevarlist.push_back("MVA_charge_asym");
+    thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_mlb");
+  }
+  if(region_name.Contains("toppair") && coupling.Contains("Zut")){
+    
+    //thevarlist.push_back("MVA_cdiscCvsB_jet_1");
+    thevarlist.push_back("MVA_cdiscCvsL_jet_1");
+    //thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
+    //thevarlist.push_back("MVA_nJets_CharmL");
+    thevarlist.push_back("MVA_dRZc");
+    //thevarlist.push_back("MVA_NJets_CSVv2M");
+    //thevarlist.push_back("MVA_dPhiZWlep");
+    thevarlist.push_back("MVA_dRWlepb"); // very good
+    //thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    //thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_mlb");
+    
 
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_M");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dRZc");
-  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_dPhiZc");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsB_jet_1");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsL_jet_1");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_nJets_CharmL");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets_CharmM");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets_CharmT");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dRSMFCNCtop");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_nJets");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_NJets_CSVv2L");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_NJets_CSVv2M");
-  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_NJets_CSVv2T");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_eta");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_eta");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_phi");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_FCNCtop_phi");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_LightJet_pt");
-  if(region_name.Contains("toppair"))thevarlist.push_back("MVA_FCNCtop_pt");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dPhiWlepc");
-  if(region_name.Contains("toppair")) thevarlist.push_back("MVA_dPhiSMFCNCtop");
-  if(region_name.Contains("toppair"))  thevarlist.push_back("MVA_dRWlepc");
-  //  thevarlist.push_back("MVA_nJets");
-  // thevarlist.push_back("MVA_NJets_CSVv2M");
-  // thevarlist.push_back("MVA_NJets_CSVv2T");
+    
+    
+  }
+  else if(region_name.Contains("toppair") && coupling.Contains("Zct"))
+  {
+    
+  //  thevarlist.push_back("MVA_nJets_CharmM");
+  //  thevarlist.push_back("MVA_cdiscCvsB_jet_1");
+
+    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
+    //thevarlist.push_back("MVA_nJets_CharmL");
+    thevarlist.push_back("MVA_dRZc");
+    thevarlist.push_back("MVA_NJets_CSVv2M");
+    thevarlist.push_back("MVA_dPhiZWlep");
+    thevarlist.push_back("MVA_dRWlepb"); // very good
+    thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_mlb");
+    
+   //  thevarlist.push_back("MVA_FCNCtop_M");
+    
+    // thevarlist.push_back("MVA_dPhiZc");
+    
+    //thevarlist.push_back("MVA_Zboson_pt");
+    
+    //  thevarlist.push_back("MVA_charge_asym");
+    
+    
+  }
+  else{
+    
+    thevarlist.push_back("MVA_TotalInvMass");
+    thevarlist.push_back("MVA_TotalHt_jet");
+    thevarlist.push_back("MVA_dRZSMtop");
+    thevarlist.push_back("MVA_dPhiZb");
+    thevarlist.push_back("MVA_dPhiZSMtop");
+
+    thevarlist.push_back("MVA_mWt");
+    thevarlist.push_back("MVA_Wboson_pt");
+    thevarlist.push_back("MVA_lepton0_eta");
+    thevarlist.push_back("MVA_met");
+    thevarlist.push_back("MVA_dRZb");
+    thevarlist.push_back("MVA_CosTheta");
+    thevarlist.push_back("MVA_CosTheta_alt");
+    
+    thevarlist.push_back("MVA_lepton0_pt"); // corelated with Z boson pt
+    
+    thevarlist.push_back("MVA_lepton2_pt");
+    thevarlist.push_back("MVA_SMbjet_pt"); // corelated with sm top
+    thevarlist.push_back("MVA_Zboson_eta");
+    thevarlist.push_back("MVA_m3l");
+
+     thevarlist.push_back("MVA_lepton1_pt"); // corelated with Z boson pt
+    thevarlist.push_back("MVA_LightJet_eta");
+    thevarlist.push_back("MVA_FCNCtop_eta");
+    thevarlist.push_back("MVA_LightJet_phi");
+    thevarlist.push_back("MVA_FCNCtop_phi");
+    thevarlist.push_back("MVA_LightJet_pt");
+    thevarlist.push_back("MVA_FCNCtop_pt");
+    thevarlist.push_back("MVA_dRSMFCNCtop");
+    thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
+    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_nJets");
+    thevarlist.push_back("MVA_NJets_CSVv2L");
+    thevarlist.push_back("MVA_cdiscCvsL_jet_1");
+    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+    thevarlist.push_back("MVA_NJets_CSVv2T");
+    thevarlist.push_back("MVA_nJets_CharmT");
+    thevarlist.push_back("MVA_dPhiWlepc");
+    thevarlist.push_back("MVA_dPhiSMFCNCtop");
+    thevarlist.push_back("MVA_dRWlepc");
+     thevarlist.push_back("MVA_TotalHt_lep");
+     thevarlist.push_back("MVA_SMtop_pt");
+    thevarlist.push_back("MVA_Zboson_M");
+    thevarlist.push_back("MVA_Wboson_M");
+    thevarlist.push_back("MVA_Wlep_pt");
+    thevarlist.push_back("MVA_lepton1_eta");
+    thevarlist.push_back("MVA_lepton2_eta");
+    
+     thevarlist.push_back("MVA_Wlep_eta");
+    thevarlist.push_back("MVA_Wboson_eta");
+     thevarlist.push_back("MVA_SMbjet_eta");
+    thevarlist.push_back("MVA_SMtop_M");
+    thevarlist.push_back("MVA_SMtop_eta");
+     thevarlist.push_back("MVA_TotalHt");
+
+
+  }
+  
+ 
   
   
-  // niet discriminerdend voor ST
+  
+ 
+  
+  
+  
+  
   
   
   
@@ -317,7 +412,7 @@ int main(int argc, char* argv[])
     }
   }
   if(doReading){
-     MVAtool->Read(bdt_type);
+    MVAtool->Read(bdt_type);
   }
   
   if(createPSData){

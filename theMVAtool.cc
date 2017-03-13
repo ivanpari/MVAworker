@@ -161,7 +161,8 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   mkdir(placeOutputTraining,0777);
   placeOutputTraining += "/" + bdt_type;
   mkdir(placeOutputTraining,0777);
-  
+  //placeOfWeights = placeOutputTraining + "/weights/";"
+  //mkdir(placeOfWeights,0777);
   TString output_file_name = placeOutputTraining+"/" + bdt_type;
   if(channel != "") {output_file_name+= "_" + channel;}
   output_file_name+= filename_suffix;
@@ -280,12 +281,11 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   //factory->BookMethod( TMVA::Types::kBDT, method_title.Data(),    "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
   //	factory->BookMethod( TMVA::Types::kBDT, method_title.Data(), "!H:!V:NTrees=100:MinNodeSize=15:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining=True" );
   // Isis
-  //factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=250:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray");
-  factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray");
+  factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray");
+  //factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray"); // ST method
   // factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=25:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.6:SeparationType=GiniIndex:nCuts=20:MaxDepth=3:NegWeightTreatment=Pray" );
-  cout << "book method " << method_title << endl;
   
-  
+ // cout << "set weights directory " << placeOfWeights << endl;
   output_file->cd();
   cout << "in outputfile " << output_file_name << endl;
   // Train MVAs using the set of training events
