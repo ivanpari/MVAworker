@@ -1,4 +1,4 @@
-//by Nicolas (inspired from Jeremy's code)
+
 
 #ifndef theMVAtool_h
 #define theMVAtool_h
@@ -69,16 +69,18 @@ public :
 	void Train_Test_Evaluate(TString, TString); //Train, Test, Evaluate BDT with MC samples
 	void Read(TString); //Produce templates of BDT, mTW (or else ?)
   void PSDataCreator(TString, TString, TString);
-  
+  Double_t Determine_Control_Cut(TString, TString, TString);
  
 //Members
 	TMVA::Reader *reader;
 
   TString placeOutputTraining;
+  TString placeOfWeights; 
   TString placeOutputReading;
 	std::vector<TString> sample_list;
   std::vector<TString> sample_listread;
 	std::vector<TString> data_list;
+
 	std::vector<TString> var_list; std::vector<float> vec_variables; //Contains as many floats as there are variables in var_list
 	std::vector<TString> channel_list;
 	std::vector<TString> v_cut_name; std::vector<TString> v_cut_def; std::vector<float> v_cut_float; std::vector<bool> v_cut_IsUsedForBDT;

@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
   double number_of_fakes = 3;
   bool doTraining = false;
   bool doReading = false;
+  bool doCRcut = false;
   bool createPSData = false;
   TString psdata = "";
   TString bdt_type = "BDT"; //'BDT' or 'BDTttZ' depending on the region (for theta disambiguation) for training!
@@ -52,17 +53,15 @@ int main(int argc, char* argv[])
       cout << "--Read Template" << endl;
       cout << "--Region region" << endl;
       cout << "--Coupling coupling" << endl;
-      cout << "--PSData what" << endl;
-      return 0;
+       return 0;
     }
     else if(argval == "--Train"){ doTraining = true; iarg++; bdt_type = argv[iarg]; cout << bdt_type << endl; }
-    else if(argval == "--PSData"){ createPSData = true; iarg++;  psdata = argv[iarg]; cout << "PSdata for " << psdata << endl;  }
-    else if(argval == "--Read"){ doReading = true; iarg++; bdt_type = argv[iarg]; cout << bdt_type << endl;}
+     else if(argval == "--Read"){ doReading = true; iarg++; bdt_type = argv[iarg]; cout << bdt_type << endl;}
     else if(argval == "--Region"){
       iarg++;
       region_name = argv[iarg];
     }
-    else if(argval == "--Coupling"){
+      else if(argval == "--Coupling"){
       iarg++;
       coupling = argv[iarg];
     }
@@ -136,7 +135,7 @@ int main(int argc, char* argv[])
   //-------------------
   //Sample order is important in function Read (so it knows which are the fake samples it must sum) and in Draw_Control_Plots (see explanation in code)
   //DATA --- THE DATA SAMPLE MUST BE UNIQUE AND IN FIRST POSITION
-  // thesamplelist_forreading.push_back("data");
+   //thesamplelist_forreading.push_back("data");
   
   
   //Signal
@@ -156,35 +155,39 @@ int main(int argc, char* argv[])
   if(coupling.Contains("Zut")) {
     if(region_name.Contains("singletop")){
       thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
+      //thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-zut");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
     }
     else{
-      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+     thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+    //  thesamplelist.push_back("NP_overlay_TT_FCNC-zut");
+      thesamplelist.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
     }
   }
   
   //BKG
   thesamplelist.push_back("tZq");
-  // thesamplelist.push_back("tHq");
+  thesamplelist.push_back("tHq");
   thesamplelist.push_back("WZTo3LNu");
   thesamplelist.push_back("ZZTo4L");
   thesamplelist.push_back("ttZ");
   //thesamplelist.push_back("TTZToQQ_amc");
   thesamplelist.push_back("WZZ_amc");
-  // thesamplelist.push_back("STtW_atop");
-  //  thesamplelist.push_back("STs_amc");
-  // thesamplelist.push_back("STt_top_amc");
-  // thesamplelist.push_back("STt_atop_amc");
+   thesamplelist.push_back("STtW_atop");
+  thesamplelist.push_back("STtW_top");
+  //if(region_name.Contains("singletop"))  thesamplelist.push_back("STs_amc");
+ // if(region_name.Contains("singletop"))  thesamplelist.push_back("STt_top_amc");
+  //if(region_name.Contains("singletop"))  thesamplelist.push_back("STt_atop_amc");
   thesamplelist.push_back("ttH");
-  //thesamplelist.push_back("tWll");
+  thesamplelist.push_back("tWll");
   thesamplelist.push_back("ttWJets");
-  //  thesamplelist.push_back("tWll");
   thesamplelist.push_back("ZZZ_amc");
   
   
   //FAKES
-  //thesamplelist_forreading.push_back("Fakes");
+  thesamplelist_forreading.push_back("fake");
   //other signal
   
   
@@ -246,44 +249,77 @@ int main(int argc, char* argv[])
   // TO ADD cdisc of b jet?
   
   if(coupling.Contains("Zut") && region_name.Contains("singletop")){
+    cout << "in singletop zut " << endl;
     thevarlist.push_back("MVA_Zboson_pt");
     thevarlist.push_back("MVA_dRWlepb"); // very good
     thevarlist.push_back("MVA_dPhiWlepb"); // very good
     thevarlist.push_back("MVA_charge_asym");
+   // thevarlist.push_back("MVA_Wlep_Charge");
     thevarlist.push_back("MVA_dRZWlep");
     thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+   //thevarlist.push_back("MVA_cdiscCvsL_jet_0");
     thevarlist.push_back("MVA_mlb");
   }
   else if(coupling.Contains("Zct") && region_name.Contains("singletop")){
+    cout << "in singletop zct " << endl;
     thevarlist.push_back("MVA_Zboson_pt");
     thevarlist.push_back("MVA_dRWlepb"); // very good
     thevarlist.push_back("MVA_dPhiWlepb"); // very good
-    thevarlist.push_back("MVA_charge_asym");
+  //  thevarlist.push_back("MVA_charge_asym");
+  //  thevarlist.push_back("MVA_Wlep_Charge");
     thevarlist.push_back("MVA_dRZWlep");
     thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
     thevarlist.push_back("MVA_mlb");
   }
   if(region_name.Contains("toppair") && coupling.Contains("Zut")){
-    
-    //thevarlist.push_back("MVA_cdiscCvsB_jet_1");
-    thevarlist.push_back("MVA_cdiscCvsL_jet_1");
-    //thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    //thevarlist.push_back("MVA_nJets_CharmL");
+    // thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    // thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
+    thevarlist.push_back("MVA_cdiscCvsB_jet_1");
+   // thevarlist.push_back("MVA_cdiscCvsL_jet_1");
+    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+   // thevarlist.push_back("MVA_cdiscCvsL_jet_0");
+    thevarlist.push_back("MVA_nJets_CharmL");
+    //thevarlist.push_back("MVA_nJets_CharmM");
     thevarlist.push_back("MVA_dRZc");
-    //thevarlist.push_back("MVA_NJets_CSVv2M");
-    //thevarlist.push_back("MVA_dPhiZWlep");
+    thevarlist.push_back("MVA_NJets_CSVv2M");
+   // thevarlist.push_back("MVA_dPhiZWlep");
     thevarlist.push_back("MVA_dRWlepb"); // very good
     //thevarlist.push_back("MVA_dPhiWlepb"); // very good
-    //thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_dRZWlep");
     thevarlist.push_back("MVA_mlb");
-    
+    //thevarlist.push_back("MVA_charge_asym");
+    //thevarlist.push_back("MVA_Wlep_Charge");
+    thevarlist.push_back("MVA_FCNCtop_M");
 
     
     
   }
   else if(region_name.Contains("toppair") && coupling.Contains("Zct"))
   {
+  //  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+   // thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
+  //  thevarlist.push_back("MVA_cdiscCvsB_jet_1");
+    thevarlist.push_back("MVA_cdiscCvsL_jet_1");
+  //  thevarlist.push_back("MVA_cdiscCvsB_jet_0");
+     thevarlist.push_back("MVA_cdiscCvsL_jet_0");
+    thevarlist.push_back("MVA_nJets_CharmL");
+  //  thevarlist.push_back("MVA_nJets_CharmM");
+  //thevarlist.push_back("MVA_nJets_CharmT");
+    thevarlist.push_back("MVA_dRZc");
+    thevarlist.push_back("MVA_NJets_CSVv2M");
+   // thevarlist.push_back("MVA_NJets_CSVv2T");
+   // thevarlist.push_back("MVA_dPhiZWlep");
+    thevarlist.push_back("MVA_dRWlepb"); // very good
+   // thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    thevarlist.push_back("MVA_dRZWlep");
+    thevarlist.push_back("MVA_mlb");
+    //thevarlist.push_back("MVA_charge_asym");
+    //thevarlist.push_back("MVA_Wlep_Charge");
+    thevarlist.push_back("MVA_FCNCtop_M");
+/*
     
   //  thevarlist.push_back("MVA_nJets_CharmM");
   //  thevarlist.push_back("MVA_cdiscCvsB_jet_1");
@@ -303,12 +339,11 @@ int main(int argc, char* argv[])
     // thevarlist.push_back("MVA_dPhiZc");
     
     //thevarlist.push_back("MVA_Zboson_pt");
-    
-    //  thevarlist.push_back("MVA_charge_asym");
+    */
     
     
   }
-  else{
+  else if(false){
     
     thevarlist.push_back("MVA_TotalInvMass");
     thevarlist.push_back("MVA_TotalHt_jet");
@@ -413,16 +448,10 @@ int main(int argc, char* argv[])
   }
   if(doReading){
     MVAtool->Read(bdt_type);
+    
   }
-  
-  if(createPSData){
-    MVAtool->PSDataCreator(psdata, "All", bdt_type);
-    for(int i=0; i<thechannellist.size(); i++)
-    {
-      MVAtool->PSDataCreator(psdata, thechannellist[i], bdt_type);
-    }
-  }
-  
+
+   
   //-------------------------------------------
   //    _____   _   _   ____
   //   | ____| | \ | | |  _ \

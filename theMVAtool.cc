@@ -52,12 +52,12 @@ theMVAtool::theMVAtool()
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 //Overloaded Constructor
-theMVAtool::theMVAtool(std::vector<TString > thevarlist, std::vector<TString > thesamplelist, std::vector<TString > thesamplelist_forreading, std::vector<TString > thechanlist,
-                       std::vector<TString > set_v_cut_name, std::vector<TString > set_v_cut_def, std::vector<bool > set_v_cut_IsUsedForBDT, int nofbin_templates = 5 , string PlaceOfTuples_ = "", TString region_name_ = "")
+theMVAtool::theMVAtool(std::vector<TString > thevarlist, std::vector<TString > thesamplelist, std::vector<TString > thesamplelist_forreading, std::vector<TString > thechanlist, std::vector<TString > set_v_cut_name, std::vector<TString > set_v_cut_def, std::vector<bool > set_v_cut_IsUsedForBDT, int nofbin_templates = 5 , string PlaceOfTuples_ = "", TString region_name_ = "")
 
 {
   PlaceOfTuples = PlaceOfTuples_;
   region_name = region_name_;
+  
   for(int i=0; i<thechanlist.size(); i++)
   {
     channel_list.push_back(thechanlist[i]);
@@ -176,7 +176,8 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   // Define the input variables that shall be used for the MVA training
   for(int i=0; i<var_list.size(); i++)
   {
-    factory->AddVariable(var_list[i].Data(), 'F');
+    if(!var_list[i].Contains("nJet") && !var_list[i].Contains("NJet") && !var_list[i].Contains("Charge") ) factory->AddVariable(var_list[i].Data(), 'F');
+    else factory->AddVariable(var_list[i].Data(), 'I');
   }
   //Choose if the cut variables are used in BDT or not
   for(int i=0; i<v_cut_name.size(); i++)
@@ -281,11 +282,11 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   //factory->BookMethod( TMVA::Types::kBDT, method_title.Data(),    "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
   //	factory->BookMethod( TMVA::Types::kBDT, method_title.Data(), "!H:!V:NTrees=100:MinNodeSize=15:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining=True" );
   // Isis
-  factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray");
-  //factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray"); // ST method
-  // factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=25:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.6:SeparationType=GiniIndex:nCuts=20:MaxDepth=3:NegWeightTreatment=Pray" );
-  
- // cout << "set weights directory " << placeOfWeights << endl;
+  /*if(region_name.Contains("toppair") factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:Shrinkage=0.5");
+  else if(region_name.Contains("toppair")factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:"); // ST method*/
+ if(region_name.Contains("toppair") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=25:BoostType=Grad:Shrinkage=0.8:UseBaggedBoost:BaggedSampleFraction=0.6:SeparationType=GiniIndex:nCuts=20:MaxDepth=3:NegWeightTreatment=Pray" );
+  else if(region_name.Contains("singletop") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=250:BoostType=Grad:Shrinkage=0.8:SeparationType=GiniIndex:nCuts=20:MaxDepth=3:NegWeightTreatment=Pray" );
+  // cout << "set weights directory " << placeOfWeights << endl;
   output_file->cd();
   cout << "in outputfile " << output_file_name << endl;
   // Train MVAs using the set of training events
@@ -337,21 +338,6 @@ void theMVAtool::Read(TString template_name)
   placeOutputReading += "/" + template_name;
   mkdir(placeOutputReading, 0777);
   
-  TString output_file_name = placeOutputReading+"/Reader_" + template_name + filename_suffix + ".root";
-  TFile* file_output = TFile::Open( output_file_name, "RECREATE" );
-  
-  
-  
-  TString output_file_name_eee = placeOutputReading+"/Reader_eee_" + template_name + filename_suffix + ".root";
-  TFile* file_output_eee = TFile::Open( output_file_name_eee, "RECREATE" );
-  TString output_file_name_eeu = placeOutputReading+"/Reader_eeu_" + template_name + filename_suffix + ".root";
-  TFile* file_output_eeu = TFile::Open( output_file_name_eeu, "RECREATE" );
-  TString output_file_name_uue = placeOutputReading+"/Reader_uue_" + template_name + filename_suffix + ".root";
-  TFile* file_output_uue = TFile::Open( output_file_name_uue, "RECREATE" );
-  TString output_file_name_uuu = placeOutputReading+"/Reader_uuu_" + template_name + filename_suffix + ".root";
-  TFile* file_output_uuu = TFile::Open( output_file_name_uuu, "RECREATE" );
-  
-  
   
   
   
@@ -383,11 +369,68 @@ void theMVAtool::Read(TString template_name)
   }
   
   
-  TH1::SetDefaultSumw2();
-  TH1F *hist_BDT(0), *hist_BDTG(0);
-  TH1F *hist_uuu = 0, *hist_uue = 0, *hist_eeu = 0, *hist_eee = 0;
+  Float_t         BDT;
+  Double_t        MVA_EqLumi;
+  Float_t         MVA_channel;
+  Float_t         MVA_weight;
+  Float_t         MVA_weight_puSF_up;
+  Float_t         MVA_weight_puSF_down;
+  Float_t         MVA_weight_electronSF_up;
+  Float_t         MVA_weight_electronSF_down;
+  Float_t         MVA_weight_muonSF_up;
+  Float_t         MVA_weight_muonSF_down;
+  Float_t         MVA_weight_btagSF_cferr1_up;
+  Float_t         MVA_weight_btagSF_cferr1_down;
+  Float_t         MVA_weight_btagSF_cferr2_up;
+  Float_t         MVA_weight_btagSF_cferr2_down;
+  Float_t         MVA_weight_btagSF_hf_up;
+  Float_t         MVA_weight_btagSF_hf_down;
+  Float_t         MVA_weight_btagSF_hfstats1_up;
+  Float_t         MVA_weight_btagSF_hfstats1_down;
+  Float_t         MVA_weight_btagSF_hfstats2_up;
+  Float_t         MVA_weight_btagSF_hfstats2_down;
+  Float_t         MVA_weight_btagSF_lf_up;
+  Float_t         MVA_weight_btagSF_lf_down;
+  Float_t         MVA_weight_btagSF_lfstats1_up;
+  Float_t         MVA_weight_btagSF_lfstats1_down;
+  Float_t         MVA_weight_btagSF_lfstats2_up;
+  Float_t         MVA_weight_btagSF_lfstats2_down;
   
+  TBranch        *b_MVA_channel;   //!
+  TBranch        *b_MVA_weight;   //!
+  TBranch        *b_MVA_weight_puSF_up;   //!
+  TBranch        *b_MVA_weight_puSF_down;   //!
+  TBranch        *b_MVA_weight_electronSF_up;   //!
+  TBranch        *b_MVA_weight_electronSF_down;   //!
+  TBranch        *b_MVA_weight_muonSF_up;   //!
+  TBranch        *b_MVA_weight_muonSF_down;   //!
+  TBranch        *b_MVA_weight_btagSF_cferr1_up;   //!
+  TBranch        *b_MVA_weight_btagSF_cferr1_down;   //!
+  TBranch        *b_MVA_weight_btagSF_cferr2_up;   //!
+  TBranch        *b_MVA_weight_btagSF_cferr2_down;   //!
+  TBranch        *b_MVA_weight_btagSF_hf_up;   //!
+  TBranch        *b_MVA_weight_btagSF_hf_down;   //!
+  TBranch        *b_MVA_weight_btagSF_hfstats1_up;   //!
+  TBranch        *b_MVA_weight_btagSF_hfstats1_down;   //!
+  TBranch        *b_MVA_weight_btagSF_hfstats2_up;   //!
+  TBranch        *b_MVA_weight_btagSF_hfstats2_down;   //!
+  TBranch        *b_MVA_weight_btagSF_lf_up;   //!
+  TBranch        *b_MVA_weight_btagSF_lf_down;   //!
+  TBranch        *b_MVA_weight_btagSF_lfstats1_up;   //!
+  TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
+  TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
+  TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
+  
+  bool doJECup_, doJECdown_, doJERup_, doJERdown_;
+  //doJECdown_ = doJECup_ = doJERdown_ = doJERup_ = false;
   //Loop on samples, syst., events ---> Fill histogram/channel --> Write()
+  TString postfix = "";
+  
+  int systematicsForNewTree = 1; // TO FIX
+ 
+  
+  
+  
   for(int isample=0; isample<sample_listread.size(); isample++)
   {
     
@@ -395,388 +438,244 @@ void theMVAtool::Read(TString template_name)
     TFile* file_input = TFile::Open( inputfile.Data() );
     
     std::cout << "--- Select "<<sample_listread[isample]<<" sample" << std::endl;
-    // prepare outpout histograms
-    hist_uuu     = new TH1F( (template_name+"_uuu").Data(),           (template_name+"_uuu").Data(),           nbin, -1, 1 );
-    hist_uue     = new TH1F( (template_name+"_uue").Data(),           (template_name+"_uue").Data(),           nbin, -1, 1 );
-    hist_eeu     = new TH1F( (template_name+"_eeu").Data(),           (template_name+"_eeu").Data(),           nbin, -1, 1 );
-    hist_eee     = new TH1F( (template_name+"_eee").Data(),           (template_name+"_eee").Data(),           nbin, -1, 1 );
     
     
     // prepare output controltree
     TString output_file_name_tree = placeOutputReading+"/TreeOfReader_" + template_name + filename_suffix + ".root";
-    TFile* file_output_tree = TFile::Open( output_file_name_tree, "UPDATE" );
+    TFile* file_output_tree(0);
     
-    TTree* tree_control(0);
-    tree_control = new TTree("tree_control", "Control Tree");
-    for(int ivar=0; ivar<var_list.size(); ivar++)
+    for(int isystree = 0; isystree < systematicsForNewTree; isystree++)
     {
-      TString var_type = var_list[ivar] + "/F";
-      tree_control->Branch(var_list[ivar].Data(), &(vec_variables[ivar]), var_type.Data());
-    }
-    for(int ivar=0; ivar<v_cut_name.size(); ivar++)
-    {
-      TString var_type = v_cut_name[ivar] + "/F";
-      tree_control->Branch(v_cut_name[ivar].Data(), &v_cut_float[ivar], var_type.Data());
-    }
-
-    TTree* tree(0);
-    TString tree_name = "";
-    tree = (TTree*) file_input->Get("mvatree");
-    
-    // Prepare the event tree
-    for(int i=0; i<var_list.size(); i++)
-    {
-      tree->SetBranchAddress(var_list[i].Data(), &vec_variables[i]);
-    }
-    for(int i=0; i<v_cut_name.size(); i++)
-    {
-      tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
-    }
-    
-    float i_channel;
-    float weight;
-    
-    float BDT; Double_t MVA_EqLumi;
-    tree_control->Branch("MVA_weight", &weight, "weight/F"); //Give it the same name regardless of the systematic, since we create a separate tree for each syst anyway
-    tree_control->Branch("MVA_channel", &i_channel, "i_channel/F");
-    tree_control->Branch("BDT",&BDT,"BDT/F");
-    tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
-    
-    tree->SetBranchAddress("MVA_channel", &i_channel);
-    tree->SetBranchAddress("MVA_weight", &weight);
-    // FIX ME FOR SYST else {tree->SetBranchAddress(syst_list[isyst].Data(), &weight);}
-    
-    
-    
-    
-    std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
-    
-    //------------------------------------------------------------
-    // --- Event loop
-    int cutArray[v_cut_name.size()];
-    double wcutArray[v_cut_name.size()];
-    int endEntries = 0;
-    for(int ivar=0; ivar<v_cut_name.size(); ivar++)
-    {
-      cutArray[ivar] = 0;
-      wcutArray[ivar] = 0.;
-    }
-    int totalEntries = 0;
-    double wendEntries = 0.;
-    double wtotalEntries = 0.;
-    
-    for(int ievt=0; ievt<tree->GetEntries(); ievt++)
-    {
-      weight = 1; i_channel = 9;
-      
-      tree->GetEntry(ievt);
-      //------------------------------------------------------------
-      //------------------------------------------------------------
-      //---- Apply cuts on Reader here -----------------------------
-      float cut_tmp = 0; bool pass_all_cuts = true;
+      file_output_tree  = TFile::Open( output_file_name_tree, "UPDATE" );
+      if(isystree == 0) {doJECdown_ = doJECup_ = doJERdown_ = doJERup_ = false;}
+      else if(isystree == 4) {doJECdown_ = true; doJECup_ = doJERdown_ = doJERup_ = false;}
+      else if(isystree == 3) {doJECdown_ = doJECup_ = doJERdown_ = false; doJERup_ = true;}
+      else if(isystree == 2) {doJECdown_ = doJECup_ = doJERup_ = false; doJERdown_ = true;}
+      else if(isystree == 1) {doJECdown_ = doJERup_ = doJERdown_ = false; doJECup_ = true;}
+      if(doJECdown_) postfix = "_JESdown";
+      if(doJECup_) postfix = "_JESup";
+      if(doJERdown_) postfix = "_JERdown";
+      if(doJERup_) postfix = "_JERup";
       
       
-      for(int ivar=0; ivar<v_cut_name.size(); ivar++)
+      TTree* tree_control(0);
+      tree_control = new TTree("tree_control"+postfix, "Control Tree " + postfix);
+      cout << "control tree " << "tree_control"+postfix << endl;
+      for(int ivar=0; ivar<var_list.size(); ivar++)
       {
         
-        if(v_cut_def[ivar] != "")
-        {
-          if(!v_cut_def[ivar].Contains("&&")) //If cut contains only 1 condition
-          {
-            cut_tmp = Find_Number_In_TString(v_cut_def[ivar]);
-            
-            if(v_cut_def[ivar].Contains(">=") && v_cut_float[ivar] < cut_tmp)		 {pass_all_cuts = false; break; }
-            else if(v_cut_def[ivar].Contains("<=") && v_cut_float[ivar] > cut_tmp)	 {pass_all_cuts = false; break; }
-            else if(v_cut_def[ivar].Contains(">") && v_cut_float[ivar] <= cut_tmp)	 {pass_all_cuts = false; break; }
-            else if(v_cut_def[ivar].Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
-            else if(v_cut_def[ivar].Contains("==") && v_cut_float[ivar] != cut_tmp)  {pass_all_cuts = false; break; }
-            else {
-              cutArray[ivar]++;
-              wcutArray[ivar] = wcutArray[ivar] + weight;
-            }
-            
-          }
-          else //If 2 conditions in the cut, break it in 2
-          {
-            TString cut1 = Break_Cuts_In_Two(v_cut_def[ivar]).first; TString cut2 = Break_Cuts_In_Two(v_cut_def[ivar]).second;
-            //CUT 1
-            bool passed = false;
-            cut_tmp = Find_Number_In_TString(cut1);
-            if(cut1.Contains(">=") && v_cut_float[ivar] < cut_tmp)			 {pass_all_cuts = false; break; }
-            else if(cut1.Contains("<=") && v_cut_float[ivar] > cut_tmp)		 {pass_all_cuts = false; break; }
-            else if(cut1.Contains(">") && v_cut_float[ivar] <= cut_tmp)		 {pass_all_cuts = false; break; }
-            else if(cut1.Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
-            else if(cut1.Contains("==") && v_cut_float[ivar] != cut_tmp) 	 {pass_all_cuts = false; break; }
-            else(passed = true);
-            //CUT 2
-            cut_tmp = Find_Number_In_TString(cut2);
-            if(cut2.Contains(">=") && v_cut_float[ivar] < cut_tmp)			 {pass_all_cuts = false; break; }
-            else if(cut2.Contains("<=") && v_cut_float[ivar] > cut_tmp)		 {pass_all_cuts = false; break; }
-            else if(cut2.Contains(">") && v_cut_float[ivar] <= cut_tmp)		 {pass_all_cuts = false; break; }
-            else if(cut2.Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
-            else if(cut2.Contains("==") && v_cut_float[ivar] != cut_tmp) 	 {pass_all_cuts = false; break; }
-            else if(passed) {
-              cutArray[ivar]++;
-              wcutArray[ivar] = wcutArray[ivar]+ weight;
-            }
-          }
-        }
-        else {
-          cutArray[ivar]++;
-        }
+        TString var_type ="";
+        if(!var_list[ivar].Contains("nJet") && !var_list[ivar].Contains("NJet") && !var_list[ivar].Contains("Charge")) var_type= var_list[ivar] + "/F";
+        else  var_type= var_list[ivar] + "/I";
+        // cout <<  var_type << endl;
+        tree_control->Branch(var_list[ivar].Data(), &(vec_variables[ivar]), var_type.Data());
+      }
+      for(int ivar=0; ivar<v_cut_name.size(); ivar++)
+      {
+        TString var_type = v_cut_name[ivar] + "/F";
+        
+        tree_control->Branch(v_cut_name[ivar].Data(), &v_cut_float[ivar], var_type.Data());
       }
       
-      totalEntries++;
-      wtotalEntries = wtotalEntries + weight;
-      if(!pass_all_cuts) {continue;}
-      endEntries++;
-      wendEntries = wendEntries + weight;
+      TTree* tree(0);
+      TString tree_name = "";
+      tree = (TTree*) file_input->Get("mvatree"+postfix);
+      cout << "mva tree " << "mvatree"+postfix << endl;
+      
+      // Prepare the event tree
+      for(int i=0; i<var_list.size(); i++)
+      {
+        tree->SetBranchAddress(var_list[i].Data(), &vec_variables[i]);
+      }
+      for(int i=0; i<v_cut_name.size(); i++)
+      {
+        tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
+      }
+      
+      
+      
+      
+     
+      tree_control->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
+      tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/F");
+      tree_control->Branch("BDT",&BDT,"BDT/F");
+      tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
+      tree_control->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/F");
+      tree_control->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/F");
+      tree_control->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/F");
+      tree_control->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/F");
+      
+      tree_control->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/F");
+      tree_control->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/F");
+      tree_control->Branch("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, "MVA_weight_btagSF_cferr1_up/F");
+      tree_control->Branch("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, "MVA_weight_btagSF_cferr1_down/F");
+      tree_control->Branch("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, "MVA_weight_btagSF_cferr2_up/F");
+      tree_control->Branch("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, "MVA_weight_btagSF_cferr2_down/F");
+      tree_control->Branch("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, "MVA_weight_btagSF_hf_up/F");
+      tree_control->Branch("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, "MVA_weight_btagSF_hf_down/F");
+      tree_control->Branch("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, "MVA_weight_btagSF_hfstats1_up/F");
+      tree_control->Branch("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, "MVA_weight_btagSF_hfstats1_down/F");
+      tree_control->Branch("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, "MVA_weight_btagSF_hfstats2_up/F");
+      tree_control->Branch("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, "MVA_weight_btagSF_hfstats2_down/F");
+      tree_control->Branch("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, "MVA_weight_btagSF_lf_up/F");
+      tree_control->Branch("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, "MVA_weight_btagSF_lf_down/F");
+      tree_control->Branch("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, "MVA_weight_btagSF_lfstats1_up/F");
+      tree_control->Branch("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, "MVA_weight_btagSF_lfstats1_down/F");
+      tree_control->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/F");
+      tree_control->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/F");
+      
+      
+      tree->SetBranchAddress("MVA_channel", &MVA_channel);
+      tree->SetBranchAddress("MVA_weight", &MVA_weight);
+      tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
+      tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
+      tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
+      tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
+      tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
+      tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
+      tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
+      tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+      
+      
+      
+      std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
+      
       //------------------------------------------------------------
-      //------------------------------------------------------------
+      // --- Event loop
+      int cutArray[v_cut_name.size()];
+      double wcutArray[v_cut_name.size()];
+      int endEntries = 0;
+      for(int ivar=0; ivar<v_cut_name.size(); ivar++)
+      {
+        cutArray[ivar] = 0;
+        wcutArray[ivar] = 0.;
+      }
+      int totalEntries = 0;
+      double wendEntries = 0.;
+      double wtotalEntries = 0.;
       
-      // fill the histograms
-      //  cout << "i_channel " << i_channel << endl;
-      if(i_channel == 0) 		{hist_uuu->Fill( reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method"), weight);}
-      else if(i_channel == 1) {hist_uue->Fill( reader->EvaluateMVA( template_name+"_uue"+filename_suffix+" method"), weight);}
-      else if(i_channel == 2) {hist_eeu->Fill( reader->EvaluateMVA( template_name+"_eeu"+filename_suffix+" method"), weight);}
-      else if(i_channel == 3) {hist_eee->Fill( reader->EvaluateMVA( template_name+"_eee"+filename_suffix+" method"), weight);}
-      else if(i_channel == 9 || weight == 0) {cout<<__LINE__<<BOLD(FRED(" : problem  weight")) << weight <<endl;}
+      for(int ievt=0; ievt<tree->GetEntries(); ievt++)
+      {
+        MVA_weight = 1; MVA_channel = 9;
+        
+        tree->GetEntry(ievt);
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        //---- Apply cuts on Reader here -----------------------------
+        float cut_tmp = 0; bool pass_all_cuts = true;
+        
+        
+        for(int ivar=0; ivar<v_cut_name.size(); ivar++)
+        {
+          
+          if(v_cut_def[ivar] != "")
+          {
+            if(!v_cut_def[ivar].Contains("&&")) //If cut contains only 1 condition
+            {
+              cut_tmp = Find_Number_In_TString(v_cut_def[ivar]);
+              
+              if(v_cut_def[ivar].Contains(">=") && v_cut_float[ivar] < cut_tmp)		 {pass_all_cuts = false; break; }
+              else if(v_cut_def[ivar].Contains("<=") && v_cut_float[ivar] > cut_tmp)	 {pass_all_cuts = false; break; }
+              else if(v_cut_def[ivar].Contains(">") && v_cut_float[ivar] <= cut_tmp)	 {pass_all_cuts = false; break; }
+              else if(v_cut_def[ivar].Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
+              else if(v_cut_def[ivar].Contains("==") && v_cut_float[ivar] != cut_tmp)  {pass_all_cuts = false; break; }
+              else {
+                cutArray[ivar]++;
+                wcutArray[ivar] = wcutArray[ivar] + MVA_weight;
+              }
+              
+            }
+            else //If 2 conditions in the cut, break it in 2
+            {
+              TString cut1 = Break_Cuts_In_Two(v_cut_def[ivar]).first; TString cut2 = Break_Cuts_In_Two(v_cut_def[ivar]).second;
+              //CUT 1
+              bool passed = false;
+              cut_tmp = Find_Number_In_TString(cut1);
+              if(cut1.Contains(">=") && v_cut_float[ivar] < cut_tmp)			 {pass_all_cuts = false; break; }
+              else if(cut1.Contains("<=") && v_cut_float[ivar] > cut_tmp)		 {pass_all_cuts = false; break; }
+              else if(cut1.Contains(">") && v_cut_float[ivar] <= cut_tmp)		 {pass_all_cuts = false; break; }
+              else if(cut1.Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
+              else if(cut1.Contains("==") && v_cut_float[ivar] != cut_tmp) 	 {pass_all_cuts = false; break; }
+              else(passed = true);
+              //CUT 2
+              cut_tmp = Find_Number_In_TString(cut2);
+              if(cut2.Contains(">=") && v_cut_float[ivar] < cut_tmp)			 {pass_all_cuts = false; break; }
+              else if(cut2.Contains("<=") && v_cut_float[ivar] > cut_tmp)		 {pass_all_cuts = false; break; }
+              else if(cut2.Contains(">") && v_cut_float[ivar] <= cut_tmp)		 {pass_all_cuts = false; break; }
+              else if(cut2.Contains("<") && v_cut_float[ivar] >= cut_tmp) 	 {pass_all_cuts = false; break; }
+              else if(cut2.Contains("==") && v_cut_float[ivar] != cut_tmp) 	 {pass_all_cuts = false; break; }
+              else if(passed) {
+                cutArray[ivar]++;
+                wcutArray[ivar] = wcutArray[ivar]+ MVA_weight;
+              }
+            }
+          }
+          else {
+            cutArray[ivar]++;
+          }
+        }
+        
+        totalEntries++;
+        wtotalEntries = wtotalEntries + MVA_weight;
+        if(!pass_all_cuts) {continue;}
+        endEntries++;
+        wendEntries = wendEntries + MVA_weight;
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        
+        
+        // fill trees
+        if(MVA_channel == 0 ) {BDT =  reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 1 ){BDT = reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 2 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 3 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method") ;}
+        
+        tree_control->Fill();
+        
+      } //end entries loop
+      cout << "RAW events" << endl;
+      for(int iC=0; iC<v_cut_name.size(); iC++)
+      {
+        cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << cutArray[iC]<< " = " << ((double) cutArray[iC]/(double)totalEntries) *100<< " % of total " << totalEntries << endl;
+      }
+      cout << "         -- leaving " << endEntries << " = " << ((double) endEntries/ (double) totalEntries)*100 << " % of total " << totalEntries << endl;
+      cout << "WEIGHTED events" << endl;
+      for(int iC=0; iC<v_cut_name.size(); iC++)
+      {
+        cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << wcutArray[iC]* luminosity_rescale<< " = " << ((double) wcutArray[iC]/(double)wtotalEntries) *100<< " % of total " << wtotalEntries * luminosity_rescale<< endl;
+      }
+      cout << "         -- leaving " << wendEntries* luminosity_rescale << " = " << ((double) wendEntries/ (double) wtotalEntries)*100 << " % of total " << wtotalEntries* luminosity_rescale << endl;
       
-      // fill trees
-      if(i_channel == 0 ) {BDT =  reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-      else if(i_channel == 1 ){BDT = reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-      else if(i_channel == 2 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-      else if(i_channel == 3 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method") ;}
-      
-      tree_control->Fill();
-      
-    } //end entries loop
-    cout << "RAW events" << endl;
-    for(int iC=0; iC<v_cut_name.size(); iC++)
-    {
-      cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << cutArray[iC]<< " = " << ((double) cutArray[iC]/(double)totalEntries) *100<< " % of total " << totalEntries << endl;
-    }
-    cout << "         -- leaving " << endEntries << " = " << ((double) endEntries/ (double) totalEntries)*100 << " % of total " << totalEntries << endl;
-    cout << "WEIGHTED events" << endl;
-    for(int iC=0; iC<v_cut_name.size(); iC++)
-    {
-      cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << wcutArray[iC]* luminosity_rescale<< " = " << ((double) wcutArray[iC]/(double)wtotalEntries) *100<< " % of total " << wtotalEntries * luminosity_rescale<< endl;
-    }
-    cout << "         -- leaving " << wendEntries* luminosity_rescale << " = " << ((double) wendEntries/ (double) wtotalEntries)*100 << " % of total " << wtotalEntries* luminosity_rescale << endl;
-    
-    // Write tree
-    file_output_tree->cd();
-    TString output_tree_name = "Control_" + sample_listread[isample]+"_80X";
-    tree_control->Write(output_tree_name.Data(), TObject::kOverwrite);
-    delete tree_control;
-    file_output_tree->Close();
-    
+      // Write tree
+      file_output_tree->cd();
+      TString output_tree_name = "Control_" + sample_listread[isample]+"_80X"+postfix;
+      tree_control->Write(output_tree_name.Data(), TObject::kOverwrite);
+      file_output_tree->Close();
+    } // sys loop
     // --- Write histograms
-    file_output->cd();
     
-    //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
-    TString output_histo_name = "";
-    TString sample_name = sample_listread[isample];
-    if (sample_listread[isample].Contains("Fakes") ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
-    {
-      output_histo_name = template_name+"_uuu_FakeMu" ;
-      hist_uuu->SetTitle(output_histo_name.Data());
-      hist_uuu->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_uue_FakeEl" ;
-      hist_uue->SetTitle(output_histo_name.Data());
-      hist_uue->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_eeu_FakeMu" ;
-      hist_eeu->SetTitle(output_histo_name.Data());
-      hist_eeu->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_eee_FakeEl";
-      hist_eee->SetTitle(output_histo_name.Data());
-      hist_eee->Write(output_histo_name.Data());
-    }
-    else //If fakes are not considered, or if sample is not fake --> write directly !
-    {
-      output_histo_name = template_name+"_uuu_" + sample_name ;
-      hist_uuu->SetTitle(output_histo_name.Data());
-      hist_uuu->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_uue_" + sample_name ;
-      hist_uue->SetTitle(output_histo_name.Data());
-      hist_uue->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_eeu_" + sample_name ;
-      hist_eeu->SetTitle(output_histo_name.Data());
-      hist_eeu->Write(output_histo_name.Data());
-      output_histo_name = template_name+"_eee_" + sample_name ;
-      hist_eee->SetTitle(output_histo_name.Data());
-      hist_eee->Write(output_histo_name.Data());
-    }
-    
-    
-    file_output_eee->cd();
-    if( sample_listread[isample].Contains("Fakes")) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
-    {
-      output_histo_name = template_name+"_eee_FakeEl" ;
-      hist_eee->Write(output_histo_name.Data());
-    }
-    else //If fakes are not considered, or if sample is not fake --> write directly !
-    {
-      output_histo_name = template_name+"_eee_" + sample_name ;
-      hist_eee->Write(output_histo_name.Data());
-    }
-    file_output_eeu->cd();
-    if( sample_listread[isample].Contains("Fakes") ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
-    {
-      output_histo_name = template_name+"_eeu_FakeMu" ;
-      hist_eeu->Write(output_histo_name.Data());
-      
-    }
-    else //If fakes are not considered, or if sample is not fake --> write directly !
-    {
-      output_histo_name = template_name+"_eeu_" + sample_name ;
-      hist_eeu->Write(output_histo_name.Data());
-      
-    }
-    file_output_uue->cd();
-    if(sample_listread[isample].Contains("Fakes")) //If sample is MC fake, don't reinitialize histos -> sum 3 MC fake samples
-    {
-      output_histo_name = template_name+"_uue_FakeEl" ;
-      hist_uue->Write(output_histo_name.Data());
-      
-    }
-    else //If fakes are not considered, or if sample is not fake --> write directly !
-    {
-      
-      output_histo_name = template_name+"_uue_" + sample_name ;
-      hist_uue->Write(output_histo_name.Data());
-      
-    }
-    file_output_uuu->cd();
-    if( sample_listread[isample].Contains("Fakes")) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
-    {
-      output_histo_name = template_name+"_uuu_FakeMu";
-      hist_uuu->Write(output_histo_name.Data());
-      
-    }
-    else //If fakes are not considered, or if sample is not fake --> write directly !
-    {
-      output_histo_name = template_name+"_uuu_" + sample_name ;
-      hist_uuu->Write(output_histo_name.Data());
-      
-    }
-    
-    
-    
-    
-    
-    
-    //don't delete if processing MC fake templates (unless all the loops have reached their ends)
-    if(isample == (sample_listread.size() - 1))
-    {
-      //cout<<"deleting dynamic histograms"<<endl;
-      delete hist_uuu; delete hist_uue; delete hist_eeu; delete hist_eee;
-    }
     
     cout<<"Done with "<<sample_listread[isample]<<" sample"<<endl;
   } //end sample loop
   
-  
-  file_output->Close();
-  file_output_eee->Close();
-  file_output_eeu->Close();
-  file_output_uue->Close();
-  file_output_uuu->Close();
-  std::cout << "--- Created root file: \""<<file_output->GetName()<<"\" containing the output histograms" << std::endl;
-  std::cout << "==> Reader() is done!" << std::endl << std::endl;
+ 
+     std::cout << "==> Reader() is done!" << std::endl << std::endl;
   
   
-}
-
-
-
-void theMVAtool::PSDataCreator(TString histoTempl, TString channel_, TString template_name ){
-  cout<<FYEL("--- Producing "<<template_name<<" PseudoData Templates ---")<<endl;
-  
-  TRandom3 therand(0); //Randomization
-  
-  TString pseudodata_input_name = "";
-  if(channel_.Contains("All")) pseudodata_input_name += placeOutputReading+"/Reader_" + template_name + filename_suffix + ".root";
-  if(channel_.Contains("eee")) pseudodata_input_name += placeOutputReading+"/Reader_eee_" + template_name + filename_suffix + ".root";
-  if(channel_.Contains("eeu")) pseudodata_input_name += placeOutputReading+"/Reader_eeu_" + template_name + filename_suffix + ".root";
-  if(channel_.Contains("uue")) pseudodata_input_name += placeOutputReading+"/Reader_uue_" + template_name + filename_suffix + ".root";
-  if(channel_.Contains("uuu")) pseudodata_input_name += placeOutputReading+"/Reader_uuu_" + template_name + filename_suffix + ".root";
-  cout << pseudodata_input_name << endl;
-  
-  
-  TFile* file = 0;
-  file = TFile::Open( pseudodata_input_name.Data(), "UPDATE");
-  if(file == 0) {cout<<BOLD(FRED("--- ERROR : Reader file not found ! Exit !"))<<endl; }
-  
-  
-  
-  TH1F *h_sum = 0, *h_tmp = 0;
-  TString histo_name = "";
-  TString template_fake_name = "";
-  
-  
-  
-  for(int ichan=0; ichan<channel_list.size(); ichan++)
-  {
-    h_sum = 0;
-    histo_name = "";
-    
-    if(channel_.Contains("eee") && !channel_list[ichan].Contains("eee")) continue;
-    if(channel_.Contains("eeu") && !channel_list[ichan].Contains("eeu")) continue;
-    if(channel_.Contains("uue") && !channel_list[ichan].Contains("uue")) continue;
-    if(channel_.Contains("uuu") && !channel_list[ichan].Contains("uuu")) continue;
-    
-    if(channel_list[ichan] == "uuu" || channel_list[ichan] == "eeu") {template_fake_name = "FakeMu";}
-    else {template_fake_name = "FakeEl";}
-    
-    
-    for(int isample = 0; isample < sample_listread.size(); isample++)
-    {
-      if(sample_listread[isample].Contains("FCNC")) {continue; } // no signal in data
-      if(!sample_listread[isample].Contains("Fake")) {
-        cout << "  -- sample " << sample_listread[isample] << endl;
-        h_tmp = 0;
-        histo_name = template_name + "_" + channel_list[ichan] + "_" + sample_list[isample];
-        cout << "  --- histo " << histo_name << endl;
-        if(!file->GetListOfKeys()->Contains(histo_name.Data())) {cout<<endl<<BOLD(FRED("--- Empty histogram (Reader empty ?) ! Exit !"))<<endl<<endl; break;}
-        h_tmp = (TH1F*) file->Get(histo_name.Data());
-        if(h_sum == 0) {h_sum = (TH1F*) h_tmp->Clone();}
-        else {h_sum->Add(h_tmp);}
-      }
-      else{
-        histo_name = template_name + "_" + channel_list[ichan] + "_" + template_fake_name;
-        cout << "  --- histo " << histo_name << endl;
-        if(!file->GetListOfKeys()->Contains(histo_name.Data())) {cout<<histo_name<<" : not found"<<endl;}
-        else
-        {
-          h_tmp = (TH1F*) file->Get(histo_name.Data());
-          if(h_sum == 0) {h_sum = (TH1F*) h_tmp->Clone();}
-          else {h_sum->Add(h_tmp);}
-        }
-        
-      }
-    }
-    
-    if(h_sum == 0) {cout<<endl<<BOLD(FRED("--- Empty histogram (Reader empty ?) ! Exit !"))<<endl<<endl; }
-    int nofbins = h_sum->GetNbinsX();
-    
-    for(int i=0; i<nofbins; i++)
-    {
-      double bin_content = h_sum->GetBinContent(i+1); //cout<<"bin "<<i+1<<endl; cout<<"initial content = "<<bin_content<<endl;
-      double new_bin_content = therand.Poisson(bin_content);// cout<<"new content = "<<new_bin_content<<endl;
-      h_sum->SetBinContent(i+1, new_bin_content);
-      h_sum->SetBinError(i+1, sqrt(new_bin_content)); //Poissonian error
-    }
-    
-    file->cd();
-    TString output_histo_name = template_name + "_" + channel_list[ichan] + "_data_obs"; // TO FIX
-    h_sum->Write(output_histo_name, TObject::kOverwrite);
-    
-  }
-  
-  file->Close();
-  
-  cout<<"--- Done with generation of pseudo-data"<<endl<<endl;
 }
 
 
