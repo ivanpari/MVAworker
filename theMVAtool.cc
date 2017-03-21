@@ -577,7 +577,11 @@ void theMVAtool::Read(TString template_name)
       tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
       tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
       tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
-      
+      tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
+       tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
+       tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
+       tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
+       tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
       
       
       std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
