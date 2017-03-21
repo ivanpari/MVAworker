@@ -82,11 +82,13 @@ public :
 	std::vector<TString> data_list;
 
 	std::vector<TString> var_list; std::vector<float> vec_variables; //Contains as many floats as there are variables in var_list
+  std::vector<TString> var_list_all; std::vector<float> vec_variables_all;
+  std::vector<TString> var_list_int; std::vector<int> vec_variables_int;
 	std::vector<TString> channel_list;
 	std::vector<TString> v_cut_name; std::vector<TString> v_cut_def; std::vector<float> v_cut_float; std::vector<bool> v_cut_IsUsedForBDT;
   std::string PlaceOfTuples;
   TString region_name;
-TString filename_suffix;
+  TString filename_suffix;
 
 	int nbin; //Control number of bins in BDT histogram
 	double luminosity_rescale;

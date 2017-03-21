@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
     }
     else{
-     thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+    // thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
     //  thesamplelist.push_back("NP_overlay_TT_FCNC-zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");

@@ -64,10 +64,13 @@ theMVAtool::theMVAtool(std::vector<TString > thevarlist, std::vector<TString > t
   }
   for(int i=0; i<thevarlist.size(); i++)
   {
-    var_list.push_back(thevarlist[i]);
-    vec_variables.push_back(0);
+    
+      var_list.push_back(thevarlist[i]);
+      vec_variables.push_back(0);
+    
   }
-  for(int i=0; i<set_v_cut_name.size(); i++)
+
+   for(int i=0; i<set_v_cut_name.size(); i++)
   {
     v_cut_name.push_back(set_v_cut_name[i]);
     v_cut_def.push_back(set_v_cut_def[i]);
@@ -176,8 +179,9 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   // Define the input variables that shall be used for the MVA training
   for(int i=0; i<var_list.size(); i++)
   {
-    if(!var_list[i].Contains("nJet") && !var_list[i].Contains("NJet") && !var_list[i].Contains("Charge") ) factory->AddVariable(var_list[i].Data(), 'F');
-    else factory->AddVariable(var_list[i].Data(), 'I');
+    //if(!var_list[i].Contains("nJet") && !var_list[i].Contains("NJet") && !var_list[i].Contains("Charge") ) factory->AddVariable(var_list_all[i].Data(), 'F');
+    //else
+    factory->AddVariable(var_list[i].Data(), 'F');
   }
   //Choose if the cut variables are used in BDT or not
   for(int i=0; i<v_cut_name.size(); i++)
@@ -203,7 +207,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
     TString inputfile;
     
     inputfile = PlaceOfTuples + "MVA_tree_" + sample_list[isample] + "_80X.root";
-    cout << "input file: " << inputfile << endl;
+   // cout << "input file: " << inputfile << endl;
     
     TFile* file_input = TFile::Open( inputfile.Data() );
     
@@ -369,35 +373,37 @@ void theMVAtool::Read(TString template_name)
   }
   
   
-  Float_t         BDT;
-  Double_t        MVA_EqLumi;
-  Float_t         MVA_channel;
-  Float_t         MVA_weight;
-  Float_t         MVA_weight_puSF_up;
-  Float_t         MVA_weight_puSF_down;
-  Float_t         MVA_weight_electronSF_up;
-  Float_t         MVA_weight_electronSF_down;
-  Float_t         MVA_weight_muonSF_up;
-  Float_t         MVA_weight_muonSF_down;
-  Float_t         MVA_weight_btagSF_cferr1_up;
-  Float_t         MVA_weight_btagSF_cferr1_down;
-  Float_t         MVA_weight_btagSF_cferr2_up;
-  Float_t         MVA_weight_btagSF_cferr2_down;
-  Float_t         MVA_weight_btagSF_hf_up;
-  Float_t         MVA_weight_btagSF_hf_down;
-  Float_t         MVA_weight_btagSF_hfstats1_up;
-  Float_t         MVA_weight_btagSF_hfstats1_down;
-  Float_t         MVA_weight_btagSF_hfstats2_up;
-  Float_t         MVA_weight_btagSF_hfstats2_down;
-  Float_t         MVA_weight_btagSF_lf_up;
-  Float_t         MVA_weight_btagSF_lf_down;
-  Float_t         MVA_weight_btagSF_lfstats1_up;
-  Float_t         MVA_weight_btagSF_lfstats1_down;
-  Float_t         MVA_weight_btagSF_lfstats2_up;
-  Float_t         MVA_weight_btagSF_lfstats2_down;
+  Double_t         MVA_BDT;
+  Double_t         MVA_EqLumi;
+  Int_t            MVA_channel;
+  Float_t          MVA_weight;
+  Double_t         MVA_weight_nom;
+  Double_t         MVA_weight_puSF_up;
+  Double_t         MVA_weight_puSF_down;
+  Double_t         MVA_weight_electronSF_up;
+  Double_t         MVA_weight_electronSF_down;
+  Double_t         MVA_weight_muonSF_up;
+  Double_t         MVA_weight_muonSF_down;
+  Double_t         MVA_weight_btagSF_cferr1_up;
+  Double_t         MVA_weight_btagSF_cferr1_down;
+  Double_t         MVA_weight_btagSF_cferr2_up;
+  Double_t         MVA_weight_btagSF_cferr2_down;
+  Double_t         MVA_weight_btagSF_hf_up;
+  Double_t         MVA_weight_btagSF_hf_down;
+  Double_t         MVA_weight_btagSF_hfstats1_up;
+  Double_t         MVA_weight_btagSF_hfstats1_down;
+  Double_t         MVA_weight_btagSF_hfstats2_up;
+  Double_t         MVA_weight_btagSF_hfstats2_down;
+  Double_t         MVA_weight_btagSF_lf_up;
+  Double_t         MVA_weight_btagSF_lf_down;
+  Double_t         MVA_weight_btagSF_lfstats1_up;
+  Double_t         MVA_weight_btagSF_lfstats1_down;
+  Double_t         MVA_weight_btagSF_lfstats2_up;
+  Double_t         MVA_weight_btagSF_lfstats2_down;
   
   TBranch        *b_MVA_channel;   //!
   TBranch        *b_MVA_weight;   //!
+  TBranch        *b_MVA_weight_nom;
   TBranch        *b_MVA_weight_puSF_up;   //!
   TBranch        *b_MVA_weight_puSF_down;   //!
   TBranch        *b_MVA_weight_electronSF_up;   //!
@@ -420,6 +426,19 @@ void theMVAtool::Read(TString template_name)
   TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
   TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
   TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
+  
+  Int_t         MVA_id1;
+  Int_t         MVA_id2;
+  Double_t         MVA_x1;
+  Double_t         MVA_x2;
+  Double_t         MVA_q;
+  
+  TBranch         *b_MVA_id1;
+  TBranch         *b_MVA_id2;
+  TBranch         *b_MVA_x1;
+  TBranch         *b_MVA_x2;
+  TBranch         *b_MVA_q;
+
   
   bool doJECup_, doJECdown_, doJERup_, doJERdown_;
   //doJECdown_ = doJECup_ = doJERdown_ = doJERup_ = false;
@@ -465,15 +484,18 @@ void theMVAtool::Read(TString template_name)
       {
         
         TString var_type ="";
-        if(!var_list[ivar].Contains("nJet") && !var_list[ivar].Contains("NJet") && !var_list[ivar].Contains("Charge")) var_type= var_list[ivar] + "/F";
-        else  var_type= var_list[ivar] + "/I";
+        var_type= var_list[ivar] + "/F";
+        
         // cout <<  var_type << endl;
         tree_control->Branch(var_list[ivar].Data(), &(vec_variables[ivar]), var_type.Data());
       }
+
       for(int ivar=0; ivar<v_cut_name.size(); ivar++)
       {
-        TString var_type = v_cut_name[ivar] + "/F";
-        
+        TString var_type = "";
+        //if(!v_cut_name[ivar].Contains("nJet") && !v_cut_name[ivar].Contains("NJet") && !v_cut_name[ivar].Contains("Charge") ) var_type = v_cut_name[ivar] + "/F";
+        //else var_type =  v_cut_name[ivar] + "/I";
+        var_type = v_cut_name[ivar] + "/F";
         tree_control->Branch(v_cut_name[ivar].Data(), &v_cut_float[ivar], var_type.Data());
       }
       
@@ -489,41 +511,47 @@ void theMVAtool::Read(TString template_name)
       }
       for(int i=0; i<v_cut_name.size(); i++)
       {
-        tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
+        
+          tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
+       
       }
       
       
       
       
      
-      tree_control->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
-      tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/F");
-      tree_control->Branch("BDT",&BDT,"BDT/F");
+      tree_control->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
+      tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/I");
+      tree_control->Branch("MVA_BDT",&MVA_BDT,"MVA_BDT/D");
       tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
-      tree_control->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/F");
-      tree_control->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/F");
-      tree_control->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/F");
-      tree_control->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/F");
+      tree_control->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/D");
+      tree_control->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/D");
+      tree_control->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/D");
+      tree_control->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/D");
       
-      tree_control->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/F");
-      tree_control->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/F");
-      tree_control->Branch("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, "MVA_weight_btagSF_cferr1_up/F");
-      tree_control->Branch("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, "MVA_weight_btagSF_cferr1_down/F");
-      tree_control->Branch("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, "MVA_weight_btagSF_cferr2_up/F");
-      tree_control->Branch("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, "MVA_weight_btagSF_cferr2_down/F");
-      tree_control->Branch("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, "MVA_weight_btagSF_hf_up/F");
-      tree_control->Branch("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, "MVA_weight_btagSF_hf_down/F");
-      tree_control->Branch("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, "MVA_weight_btagSF_hfstats1_up/F");
-      tree_control->Branch("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, "MVA_weight_btagSF_hfstats1_down/F");
-      tree_control->Branch("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, "MVA_weight_btagSF_hfstats2_up/F");
-      tree_control->Branch("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, "MVA_weight_btagSF_hfstats2_down/F");
-      tree_control->Branch("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, "MVA_weight_btagSF_lf_up/F");
-      tree_control->Branch("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, "MVA_weight_btagSF_lf_down/F");
-      tree_control->Branch("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, "MVA_weight_btagSF_lfstats1_up/F");
-      tree_control->Branch("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, "MVA_weight_btagSF_lfstats1_down/F");
-      tree_control->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/F");
-      tree_control->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/F");
-      
+      tree_control->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/D");
+      tree_control->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/D");
+      tree_control->Branch("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, "MVA_weight_btagSF_cferr1_up/D");
+      tree_control->Branch("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, "MVA_weight_btagSF_cferr1_down/D");
+      tree_control->Branch("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, "MVA_weight_btagSF_cferr2_up/D");
+      tree_control->Branch("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, "MVA_weight_btagSF_cferr2_down/D");
+      tree_control->Branch("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, "MVA_weight_btagSF_hf_up/D");
+      tree_control->Branch("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, "MVA_weight_btagSF_hf_down/D");
+      tree_control->Branch("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, "MVA_weight_btagSF_hfstats1_up/D");
+      tree_control->Branch("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, "MVA_weight_btagSF_hfstats1_down/D");
+      tree_control->Branch("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, "MVA_weight_btagSF_hfstats2_up/D");
+      tree_control->Branch("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, "MVA_weight_btagSF_hfstats2_down/D");
+      tree_control->Branch("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, "MVA_weight_btagSF_lf_up/D");
+      tree_control->Branch("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, "MVA_weight_btagSF_lf_down/D");
+      tree_control->Branch("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, "MVA_weight_btagSF_lfstats1_up/D");
+      tree_control->Branch("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, "MVA_weight_btagSF_lfstats1_down/D");
+      tree_control->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/D");
+      tree_control->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/D");
+      tree_control->Branch("MVA_x1", &MVA_x1, "MVA_b_x1/D");
+      tree_control->Branch("MVA_x2", &MVA_x2, "MVA_b_x2/D");
+      tree_control->Branch("MVA_id1", &MVA_id1, "MVA_b_id1/I");
+      tree_control->Branch("MVA_id2", &MVA_id2, "MVA_b_id2/I");
+      tree_control->Branch("MVA_q", &MVA_q, "MVA_q/D");
       
       tree->SetBranchAddress("MVA_channel", &MVA_channel);
       tree->SetBranchAddress("MVA_weight", &MVA_weight);
@@ -573,6 +601,7 @@ void theMVAtool::Read(TString template_name)
         MVA_weight = 1; MVA_channel = 9;
         
         tree->GetEntry(ievt);
+        
         //------------------------------------------------------------
         //------------------------------------------------------------
         //---- Apply cuts on Reader here -----------------------------
@@ -639,10 +668,10 @@ void theMVAtool::Read(TString template_name)
         
         
         // fill trees
-        if(MVA_channel == 0 ) {BDT =  reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 1 ){BDT = reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 2 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 3 ){BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method") ;}
+        if(MVA_channel == 0 ) {MVA_BDT =  reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 1 ){MVA_BDT = reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 2 ){MVA_BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
+        else if(MVA_channel == 3 ){MVA_BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method") ;}
         
         tree_control->Fill();
         
