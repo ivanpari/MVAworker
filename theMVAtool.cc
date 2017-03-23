@@ -445,7 +445,7 @@ void theMVAtool::Read(TString template_name)
   //Loop on samples, syst., events ---> Fill histogram/channel --> Write()
   TString postfix = "";
   
-  int systematicsForNewTree = 1; // TO FIX
+  int systematicsForNewTree = 5;
  
   
   
@@ -453,32 +453,46 @@ void theMVAtool::Read(TString template_name)
   for(int isample=0; isample<sample_listread.size(); isample++)
   {
     
-    TString inputfile = PlaceOfTuples+"MVA_tree_" + sample_listread[isample] + "_80X.root";
-    TFile* file_input = TFile::Open( inputfile.Data() );
+   
     
     std::cout << "--- Select "<<sample_listread[isample]<<" sample" << std::endl;
     
     
     // prepare output controltree
     TString output_file_name_tree = placeOutputReading+"/TreeOfReader_" + template_name + filename_suffix + ".root";
-    TFile* file_output_tree(0);
+    //TFile* file_output_tree(0);
     
     for(int isystree = 0; isystree < systematicsForNewTree; isystree++)
     {
-      file_output_tree  = TFile::Open( output_file_name_tree, "UPDATE" );
+     // cout << "isystree " << isystree << endl;
+      if( (sample_listread[isample].Contains("fake") || sample_listread[isample].Contains("data")) && isystree != 0 ){ // no jec / jer for data/fakes
+       // cout << "found data/fakes, continue" << endl;
+        continue;
+      }
+      
       if(isystree == 0) {doJECdown_ = doJECup_ = doJERdown_ = doJERup_ = false;}
       else if(isystree == 4) {doJECdown_ = true; doJECup_ = doJERdown_ = doJERup_ = false;}
       else if(isystree == 3) {doJECdown_ = doJECup_ = doJERdown_ = false; doJERup_ = true;}
       else if(isystree == 2) {doJECdown_ = doJECup_ = doJERup_ = false; doJERdown_ = true;}
       else if(isystree == 1) {doJECdown_ = doJERup_ = doJERdown_ = false; doJECup_ = true;}
       if(doJECdown_) postfix = "_JESdown";
-      if(doJECup_) postfix = "_JESup";
-      if(doJERdown_) postfix = "_JERdown";
-      if(doJERup_) postfix = "_JERup";
+      else if(doJECup_) postfix = "_JESup";
+      else if(doJERdown_) postfix = "_JERdown";
+      else if(doJERup_) postfix = "_JERup";
+      else postfix = "";
+      
+      TString inputfile = PlaceOfTuples+"MVA_tree_" + sample_listread[isample] + "_80X" + postfix + ".root";
+      TFile* file_input = TFile::Open(inputfile.Data());
+      cout << "input file " << inputfile.Data() << endl;
+      TString tree_name = "mvatree"+postfix;
+      TTree* tree = (TTree*) file_input->Get(tree_name.Data());
+      cout << "mva tree coming from " << tree_name.Data() << " " << tree <<  endl;
       
       
-      TTree* tree_control(0);
-      tree_control = new TTree("tree_control"+postfix, "Control Tree " + postfix);
+      TFile* file_output_tree(0);
+      if(isystree == 0) file_output_tree = new TFile( output_file_name_tree, "RECREATE" );
+      else file_output_tree = new TFile( output_file_name_tree, "UPDATE" );
+      TTree* tree_control = new TTree("tree_control"+postfix, "Control Tree " + postfix);
       cout << "control tree " << "tree_control"+postfix << endl;
       for(int ivar=0; ivar<var_list.size(); ivar++)
       {
@@ -499,11 +513,9 @@ void theMVAtool::Read(TString template_name)
         tree_control->Branch(v_cut_name[ivar].Data(), &v_cut_float[ivar], var_type.Data());
       }
       
-      TTree* tree(0);
-      TString tree_name = "";
-      tree = (TTree*) file_input->Get("mvatree"+postfix);
-      cout << "mva tree " << "mvatree"+postfix << endl;
       
+      
+     // cout << "start branches set " << endl;
       // Prepare the event tree
       for(int i=0; i<var_list.size(); i++)
       {
@@ -517,7 +529,7 @@ void theMVAtool::Read(TString template_name)
       }
       
       
-      
+     // cout << "all branches mva vars set " << endl;
       
      
       tree_control->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
@@ -552,7 +564,7 @@ void theMVAtool::Read(TString template_name)
       tree_control->Branch("MVA_id1", &MVA_id1, "MVA_b_id1/I");
       tree_control->Branch("MVA_id2", &MVA_id2, "MVA_b_id2/I");
       tree_control->Branch("MVA_q", &MVA_q, "MVA_q/D");
-      
+     // cout << "all control branches set " << endl;
       tree->SetBranchAddress("MVA_channel", &MVA_channel);
       tree->SetBranchAddress("MVA_weight", &MVA_weight);
       tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
@@ -583,8 +595,8 @@ void theMVAtool::Read(TString template_name)
        tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
        tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
       
-      
-      std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
+     // cout << "all branches set " << endl;
+      //std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
       
       //------------------------------------------------------------
       // --- Event loop
@@ -680,7 +692,7 @@ void theMVAtool::Read(TString template_name)
         tree_control->Fill();
         
       } //end entries loop
-      cout << "RAW events" << endl;
+      /*cout << "RAW events" << endl;
       for(int iC=0; iC<v_cut_name.size(); iC++)
       {
         cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << cutArray[iC]<< " = " << ((double) cutArray[iC]/(double)totalEntries) *100<< " % of total " << totalEntries << endl;
@@ -692,12 +704,13 @@ void theMVAtool::Read(TString template_name)
         cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << wcutArray[iC]* luminosity_rescale<< " = " << ((double) wcutArray[iC]/(double)wtotalEntries) *100<< " % of total " << wtotalEntries * luminosity_rescale<< endl;
       }
       cout << "         -- leaving " << wendEntries* luminosity_rescale << " = " << ((double) wendEntries/ (double) wtotalEntries)*100 << " % of total " << wtotalEntries* luminosity_rescale << endl;
-      
+      */
       // Write tree
       file_output_tree->cd();
       TString output_tree_name = "Control_" + sample_listread[isample]+"_80X"+postfix;
       tree_control->Write(output_tree_name.Data(), TObject::kOverwrite);
       file_output_tree->Close();
+      delete tree;
     } // sys loop
     // --- Write histograms
     

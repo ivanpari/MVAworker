@@ -10,6 +10,7 @@ int main(int argc, char* argv[])
   std::vector<TString> thesamplelist;
   std::vector<TString> thesamplelist_forreading;
   std::vector<TString > thevarlist; //Variables used in BDT
+  std::vector<TString > thevarlisttree;
   std::vector<TString > thechannellist;
   std::vector<TString > set_v_cut_name;
   std::vector<TString > set_v_cut_def;
@@ -155,13 +156,11 @@ int main(int argc, char* argv[])
   if(coupling.Contains("Zut")) {
     if(region_name.Contains("singletop")){
       thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
-      //thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-zut");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
     }
     else{
-    // thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
-    //  thesamplelist.push_back("NP_overlay_TT_FCNC-zut");
+      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
     }
@@ -170,16 +169,25 @@ int main(int argc, char* argv[])
   //BKG
   thesamplelist.push_back("tZq");
   thesamplelist.push_back("tHq");
-  thesamplelist.push_back("WZTo3LNu");
+  //thesamplelist.push_back("WZTo3LNu");
+  //thesamplelist.push_back("WZTo3LNu_0Jets_MLL-4To50"); empty
+ // thesamplelist.push_back("WZTo3LNu_0Jets_MLL50");
+  thesamplelist.push_back("WZTo3LNu_1Jets_MLL-4To50");
+  thesamplelist.push_back("WZTo3LNu_1Jets_MLL50");
+  thesamplelist.push_back("WZTo3LNu_2Jets_MLL-4To50");
+  thesamplelist.push_back("WZTo3LNu_2Jets_MLL50");
+  //thesamplelist.push_back("WZTo3LNu_3Jets_MLL-4To50");
+  thesamplelist.push_back("WZTo3LNu_3Jets_MLL50");
   thesamplelist.push_back("ZZTo4L");
   thesamplelist.push_back("ttZ");
   //thesamplelist.push_back("TTZToQQ_amc");
   thesamplelist.push_back("WZZ_amc");
-   thesamplelist.push_back("STtW_atop");
+  thesamplelist.push_back("STtW_atop");
   thesamplelist.push_back("STtW_top");
-  //if(region_name.Contains("singletop"))  thesamplelist.push_back("STs_amc");
- // if(region_name.Contains("singletop"))  thesamplelist.push_back("STt_top_amc");
-  //if(region_name.Contains("singletop"))  thesamplelist.push_back("STt_atop_amc");
+  // hesamplelist.push_back("STs_amc"); // empty
+  // thesamplelist.push_back("STt_top"); // empty
+  //thesamplelist.push_back("STt_atop"); // empty
+  
   thesamplelist.push_back("ttH");
   thesamplelist.push_back("tWll");
   thesamplelist.push_back("ttWJets");
@@ -246,8 +254,26 @@ int main(int argc, char* argv[])
   //thevarlist.push_back("MVA_region"); used as cut
   
   
-  // TO ADD cdisc of b jet?
   
+  if(region_name.Contains("singletop") && region_name.Contains("toppair")){
+    thevarlisttree.push_back("MVA_Zboson_pt");
+    thevarlisttree.push_back("MVA_dRWlepb"); // very good
+    thevarlisttree.push_back("MVA_dPhiWlepb"); // very good
+    thevarlisttree.push_back("MVA_charge_asym");
+    thevarlisttree.push_back("MVA_dRZWlep");
+    thevarlisttree.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlisttree.push_back("MVA_cdiscCvsB_jet_0");
+    thevarlisttree.push_back("MVA_mlb");
+    thevarlisttree.push_back("MVA_cdiscCvsL_jet_0");
+  } else if (region_name.Contains("toppair")){
+    thevarlisttree.push_back("MVA_cdiscCvsB_jet_1");
+    thevarlisttree.push_back("MVA_nJets_CharmL");
+    thevarlisttree.push_back("MVA_dRZc");
+    thevarlisttree.push_back("MVA_NJets_CSVv2M");
+    thevarlisttree.push_back("MVA_dRWlepb"); // very good
+    thevarlisttree.push_back("MVA_mlb");
+    thevarlisttree.push_back("MVA_FCNCtop_M");
+  }
   if(coupling.Contains("Zut") && region_name.Contains("singletop")){
     cout << "in singletop zut " << endl;
     thevarlist.push_back("MVA_Zboson_pt");
