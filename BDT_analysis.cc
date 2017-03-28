@@ -171,12 +171,12 @@ int main(int argc, char* argv[])
   thesamplelist.push_back("tHq");
   //thesamplelist.push_back("WZTo3LNu");
   //thesamplelist.push_back("WZTo3LNu_0Jets_MLL-4To50"); empty
- // thesamplelist.push_back("WZTo3LNu_0Jets_MLL50");
+  thesamplelist.push_back("WZTo3LNu_0Jets_MLL50");
   thesamplelist.push_back("WZTo3LNu_1Jets_MLL-4To50");
   thesamplelist.push_back("WZTo3LNu_1Jets_MLL50");
   thesamplelist.push_back("WZTo3LNu_2Jets_MLL-4To50");
   thesamplelist.push_back("WZTo3LNu_2Jets_MLL50");
-  //thesamplelist.push_back("WZTo3LNu_3Jets_MLL-4To50");
+  thesamplelist.push_back("WZTo3LNu_3Jets_MLL-4To50");
   thesamplelist.push_back("WZTo3LNu_3Jets_MLL50");
   thesamplelist.push_back("ZZTo4L");
   thesamplelist.push_back("ttZ");

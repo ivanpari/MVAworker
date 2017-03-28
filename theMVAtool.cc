@@ -84,6 +84,7 @@ theMVAtool::theMVAtool(std::vector<TString > thevarlist, std::vector<TString > t
   }
   for(int i=0; i<thesamplelist_forreading.size(); i++)
   {
+    //sample_listread.push_back(thesamplelist[i]);
     sample_listread.push_back(thesamplelist_forreading[i]);
   }
   for(int isample=0; isample<sample_listread.size(); isample++)
@@ -460,7 +461,7 @@ void theMVAtool::Read(TString template_name)
     
     // prepare output controltree
     TString output_file_name_tree = placeOutputReading+"/TreeOfReader_" + template_name + filename_suffix + ".root";
-    //TFile* file_output_tree(0);
+    TFile* file_output_tree(0);
     
     for(int isystree = 0; isystree < systematicsForNewTree; isystree++)
     {
@@ -489,9 +490,12 @@ void theMVAtool::Read(TString template_name)
       cout << "mva tree coming from " << tree_name.Data() << " " << tree <<  endl;
       
       
-      TFile* file_output_tree(0);
-      if(isystree == 0) file_output_tree = new TFile( output_file_name_tree, "RECREATE" );
+      //TFile* file_output_tree(0);
+      if(isystree == 0 && isample == 0) { // recreate at first instance
+         file_output_tree = new TFile( output_file_name_tree, "RECREATE" );
+      }
       else file_output_tree = new TFile( output_file_name_tree, "UPDATE" );
+      
       TTree* tree_control = new TTree("tree_control"+postfix, "Control Tree " + postfix);
       cout << "control tree " << "tree_control"+postfix << endl;
       for(int ivar=0; ivar<var_list.size(); ivar++)
