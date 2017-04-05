@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
   //thesamplelist.push_back("STt_atop"); // empty
   
   thesamplelist.push_back("ttHToNonbb");
-  thesamplelist.push_back("tthTobb");
+  thesamplelist.push_back("ttHTobb");
   thesamplelist.push_back("tWll");
   //thesamplelist.push_back("ttWJets");
   thesamplelist.push_back("ZZZ_amc");
