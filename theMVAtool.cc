@@ -376,6 +376,7 @@ void theMVAtool::Read(TString template_name)
   
   Double_t         MVA_BDT;
   Double_t         MVA_EqLumi;
+  Double_t         MVA_Luminosity;
   Int_t            MVA_channel;
   Float_t          MVA_weight;
   Double_t         MVA_weight_nom;
@@ -439,14 +440,15 @@ void theMVAtool::Read(TString template_name)
   TBranch         *b_MVA_x1;
   TBranch         *b_MVA_x2;
   TBranch         *b_MVA_q;
-
+  TBranch         *b_MVA_Luminosity;
+  TBranch         *b_MVA_EqLumi;
   
   bool doJECup_, doJECdown_, doJERup_, doJERdown_;
   //doJECdown_ = doJECup_ = doJERdown_ = doJERup_ = false;
   //Loop on samples, syst., events ---> Fill histogram/channel --> Write()
   TString postfix = "";
   
-  int systematicsForNewTree = 5;
+  int systematicsForNewTree = 1; //5;
  
   
   
@@ -483,6 +485,7 @@ void theMVAtool::Read(TString template_name)
       else postfix = "";
       
       TString inputfile = PlaceOfTuples+"MVA_tree_" + sample_listread[isample] + "_80X" + postfix + ".root";
+      if( sample_listread[isample].Contains("data")) inputfile = PlaceOfTuples+"MVA_tree_" + sample_listread[isample] + postfix + ".root";
       TFile* file_input = TFile::Open(inputfile.Data());
       cout << "input file " << inputfile.Data() << endl;
       TString tree_name = "mvatree"+postfix;
@@ -540,6 +543,7 @@ void theMVAtool::Read(TString template_name)
       tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/I");
       tree_control->Branch("MVA_BDT",&MVA_BDT,"MVA_BDT/D");
       tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
+      tree_control->Branch("MVA_Luminosity",&MVA_Luminosity, "MVA_Luminosity/D");
       tree_control->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/D");
       tree_control->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/D");
       tree_control->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/D");
@@ -568,9 +572,13 @@ void theMVAtool::Read(TString template_name)
       tree_control->Branch("MVA_id1", &MVA_id1, "MVA_b_id1/I");
       tree_control->Branch("MVA_id2", &MVA_id2, "MVA_b_id2/I");
       tree_control->Branch("MVA_q", &MVA_q, "MVA_q/D");
-     // cout << "all control branches set " << endl;
+      cout << "all control branches set " << endl;
+      tree->SetBranchAddress("MVA_EqLumi",&MVA_EqLumi, &b_MVA_EqLumi);
+      tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
+      //tree->SetBranchAddress("MVA_Luminosity",&MVA_Luminosity, &b_MVA_Luminosity);
       tree->SetBranchAddress("MVA_channel", &MVA_channel);
       tree->SetBranchAddress("MVA_weight", &MVA_weight);
+      tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom);
       tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
       tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
       tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
@@ -712,6 +720,7 @@ void theMVAtool::Read(TString template_name)
       // Write tree
       file_output_tree->cd();
       TString output_tree_name = "Control_" + sample_listread[isample]+"_80X"+postfix;
+      if( sample_listread[isample].Contains("data")) output_tree_name = "Control_" + sample_listread[isample]+postfix;
       tree_control->Write(output_tree_name.Data(), TObject::kOverwrite);
       file_output_tree->Close();
       delete tree;

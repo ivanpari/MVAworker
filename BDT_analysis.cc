@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   
   
   int verbose = 2;
-  std::string PlaceOfTuples = "/Users/ivanpari/Desktop/Playground/MVA/MVAWorker/Ntuples/"; //170223/MVAtrees/";
+  std::string PlaceOfTuples = "Ntuples/"; //170223/MVAtrees/";
   // What are you doing?
   double number_of_fakes = 3;
   bool doTraining = false;
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
   //-------------------
   //Sample order is important in function Read (so it knows which are the fake samples it must sum) and in Draw_Control_Plots (see explanation in code)
   //DATA --- THE DATA SAMPLE MUST BE UNIQUE AND IN FIRST POSITION
-   //thesamplelist_forreading.push_back("data");
+  thesamplelist_forreading.push_back("data");
   
   
   //Signal
@@ -179,7 +179,9 @@ int main(int argc, char* argv[])
   thesamplelist.push_back("WZTo3LNu_3Jets_MLL-4To50");
   thesamplelist.push_back("WZTo3LNu_3Jets_MLL50");
   thesamplelist.push_back("ZZTo4L");
-  thesamplelist.push_back("ttZ");
+  thesamplelist.push_back("TTZToLLNuNu_amc");
+  thesamplelist.push_back("TTWJetsToLNu_amc");
+  //thesamplelist.push_back("ttZ");
   //thesamplelist.push_back("TTZToQQ_amc");
   thesamplelist.push_back("WZZ_amc");
   thesamplelist.push_back("STtW_atop");
@@ -188,14 +190,19 @@ int main(int argc, char* argv[])
   // thesamplelist.push_back("STt_top"); // empty
   //thesamplelist.push_back("STt_atop"); // empty
   
-  thesamplelist.push_back("ttH");
+  thesamplelist.push_back("ttHToNonbb");
+  thesamplelist.push_back("tthTobb");
   thesamplelist.push_back("tWll");
-  thesamplelist.push_back("ttWJets");
+  //thesamplelist.push_back("ttWJets");
   thesamplelist.push_back("ZZZ_amc");
   
   
   //FAKES
   thesamplelist_forreading.push_back("fake");
+  thesamplelist_forreading.push_back("TTJets_powheg");
+  thesamplelist_forreading.push_back("Zjets50_1Jets");
+  thesamplelist_forreading.push_back("Zjets50_3Jets");
+  thesamplelist_forreading.push_back("Zjets50_4Jets");
   //other signal
   
   
