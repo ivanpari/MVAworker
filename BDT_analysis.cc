@@ -145,10 +145,12 @@ int main(int argc, char* argv[])
   if(coupling.Contains("Zct")){
     if(region_name.Contains("singletop")){
       thesamplelist.push_back("NP_overlay_ST_FCNC_zct");
+     // thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
     }
     else{
-      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zct");
+      //thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zct");
+      thesamplelist.push_back("NP_overlay_ST_FCNC_zct");
       thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct");
     }
   }
@@ -156,11 +158,14 @@ int main(int argc, char* argv[])
   if(coupling.Contains("Zut")) {
     if(region_name.Contains("singletop")){
       thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
+      //thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
+      //thesamplelist.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
       thesamplelist_forreading.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
     }
     else{
-      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+     // thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut");
+      thesamplelist.push_back("NP_overlay_ST_FCNC_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut");
       thesamplelist.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut");
     }
@@ -184,12 +189,12 @@ int main(int argc, char* argv[])
   //thesamplelist.push_back("ttZ");
   //thesamplelist.push_back("TTZToQQ_amc");
   thesamplelist.push_back("WZZ_amc");
-  thesamplelist.push_back("STtW_atop");
-  thesamplelist.push_back("STtW_top");
+
   // hesamplelist.push_back("STs_amc"); // empty
   // thesamplelist.push_back("STt_top"); // empty
   //thesamplelist.push_back("STt_atop"); // empty
-  
+  thesamplelist.push_back("STtW_top"); // empty
+  thesamplelist.push_back("STtW_atop"); // empty
   thesamplelist.push_back("ttHToNonbb");
   thesamplelist.push_back("ttHTobb");
   thesamplelist.push_back("tWll");
@@ -199,10 +204,13 @@ int main(int argc, char* argv[])
   
   //FAKES
   thesamplelist_forreading.push_back("fake");
-  thesamplelist_forreading.push_back("TTJets_powheg");
-  thesamplelist_forreading.push_back("Zjets50_1Jets");
-  thesamplelist_forreading.push_back("Zjets50_3Jets");
-  thesamplelist_forreading.push_back("Zjets50_4Jets");
+ // thesamplelist_forreading.push_back("TTJets_powheg");
+ // thesamplelist_forreading.push_back("Zjets50_1Jets");
+//  thesamplelist_forreading.push_back("Zjets50_3Jets");
+ // thesamplelist_forreading.push_back("Zjets50_4Jets");
+  thesamplelist_forreading.push_back("WZJTo3LNu_amc");
+  thesamplelist_forreading.push_back("WZTo3LNu");
+  thesamplelist_forreading.push_back("WZTo3LNu_amc"); 
   //other signal
   
   
@@ -262,7 +270,7 @@ int main(int argc, char* argv[])
   
   
   
-  if(region_name.Contains("singletop") && region_name.Contains("toppair")){
+  /*if(region_name.Contains("singletop") && region_name.Contains("toppair")){
     thevarlisttree.push_back("MVA_Zboson_pt");
     thevarlisttree.push_back("MVA_dRWlepb"); // very good
     thevarlisttree.push_back("MVA_dPhiWlepb"); // very good
@@ -281,7 +289,7 @@ int main(int argc, char* argv[])
     thevarlisttree.push_back("MVA_mlb");
     thevarlisttree.push_back("MVA_FCNCtop_M");
   }
-  if(coupling.Contains("Zut") && region_name.Contains("singletop")){
+*/  if(coupling.Contains("Zut") && region_name.Contains("singletop")){
     cout << "in singletop zut " << endl;
     thevarlist.push_back("MVA_Zboson_pt");
     thevarlist.push_back("MVA_dRWlepb"); // very good
