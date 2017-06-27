@@ -65,12 +65,12 @@ theMVAtool::theMVAtool(std::vector<TString > thevarlist, std::vector<TString > t
   for(int i=0; i<thevarlist.size(); i++)
   {
     
-      var_list.push_back(thevarlist[i]);
-      vec_variables.push_back(0);
+    var_list.push_back(thevarlist[i]);
+    vec_variables.push_back(0);
     
   }
-
-   for(int i=0; i<set_v_cut_name.size(); i++)
+  
+  for(int i=0; i<set_v_cut_name.size(); i++)
   {
     v_cut_name.push_back(set_v_cut_name[i]);
     v_cut_def.push_back(set_v_cut_def[i]);
@@ -175,7 +175,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   
   // Create the factory object
   //TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" ); //some Transformations can trigger warnings
-  TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:!DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
+  TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:!DrawProgressBar:Transformations=I:AnalysisType=Classification" );
   
   // Define the input variables that shall be used for the MVA training
   for(int i=0; i<var_list.size(); i++)
@@ -208,7 +208,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
     TString inputfile;
     
     inputfile = PlaceOfTuples + "MVA_tree_" + sample_list[isample] + "_80X.root";
-   // cout << "input file: " << inputfile << endl;
+    // cout << "input file: " << inputfile << endl;
     
     TFile* file_input = TFile::Open( inputfile.Data() );
     
@@ -222,8 +222,8 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
     // You can add an arbitrary number of signal or background trees
     //NB : can't account for luminosity rescaling here, but it is not necessary for the training (only relative weights matter ?)
     if(!bdt_type.Contains("fake")){
-    if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "MVA_weight" );}
-    else {factory->AddBackgroundTree( tree, backgroundWeight ); factory->SetBackgroundWeightExpression( "MVA_weight" );}
+      if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "MVA_weight" );}
+      else {factory->AddBackgroundTree( tree, backgroundWeight ); factory->SetBackgroundWeightExpression( "MVA_weight" );}
     }
     else{
       if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "MVA_weight" );}
@@ -294,9 +294,9 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   //	factory->BookMethod( TMVA::Types::kBDT, method_title.Data(), "!H:!V:NTrees=100:MinNodeSize=15:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining=True" );
   // Isis
   /*if(region_name.Contains("toppair") factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:Shrinkage=0.5");
-  else if(region_name.Contains("toppair")factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:"); // ST method*/
-if(region_name.Contains("toppair") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=250:MinNodeSize=10%:BoostType=Grad:Shrinkage=0.3:UseBaggedBoost:BaggedSampleFraction=0.8:SeparationType=GiniIndex:nCuts=15:MaxDepth=4:NegWeightTreatment=Pray" );
-else if(region_name.Contains("singletop") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=250:MinNodeSize=10%:BoostType=Grad:Shrinkage=0.3:SeparationType=GiniIndex:nCuts=15:MaxDepth=2:NegWeightTreatment=Pray:PruneMethod=NoPruning" );
+   else if(region_name.Contains("toppair")factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:"); // ST method*/
+  if(region_name.Contains("toppair") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=250:MinNodeSize=5%:BoostType=Grad:Shrinkage=0.2:UseBaggedBoost:BaggedSampleFraction=0.8:SeparationType=GiniIndex:nCuts=15:MaxDepth=3:NegWeightTreatment=Pray" );
+  else if(region_name.Contains("singletop") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=25:MinNodeSize=5%:BoostType=Grad:Shrinkage=0.3::UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=15:MaxDepth=3:NegWeightTreatment=Pray:PruneMethod=NoPruning" );
   // cout << "set weights directory " << placeOfWeights << endl;
   output_file->cd();
   cout << "in outputfile " << output_file_name << endl;
@@ -381,7 +381,7 @@ void theMVAtool::Read(TString template_name)
   
   
   Double_t         MVA_BDT;
-  /*Double_t         MVA_EqLumi;
+  Double_t         MVA_EqLumi;
   Double_t         MVA_Luminosity;
   Int_t            MVA_channel;
   Float_t          MVA_weight;
@@ -456,11 +456,11 @@ void theMVAtool::Read(TString template_name)
   TBranch         *b_MVA_x2;
   TBranch         *b_MVA_q;
   TBranch         *b_MVA_Luminosity;
-  TBranch         *b_MVA_EqLumi;*/
+  TBranch         *b_MVA_EqLumi;
   
   
-
-
+  
+  
   
   
   
@@ -471,14 +471,14 @@ void theMVAtool::Read(TString template_name)
   TString postfix = "";
   
   int systematicsForNewTree = 1; //5
- 
+  
   
   
   
   for(int isample=0; isample<sample_listread.size(); isample++)
   {
     
-   
+    
     
     std::cout << "--- Select "<<sample_listread[isample]<<" sample" << std::endl;
     
@@ -489,9 +489,9 @@ void theMVAtool::Read(TString template_name)
     
     for(int isystree = 0; isystree < systematicsForNewTree; isystree++)
     {
-     // cout << "isystree " << isystree << endl;
+      // cout << "isystree " << isystree << endl;
       if( (sample_listread[isample].Contains("fake") || sample_listread[isample].Contains("data")) && isystree != 0 ){ // no jec / jer for data/fakes
-       // cout << "found data/fakes, continue" << endl;
+        // cout << "found data/fakes, continue" << endl;
         continue;
       }
       
@@ -514,10 +514,10 @@ void theMVAtool::Read(TString template_name)
       TTree* tree = (TTree*) file_input->Get(tree_name.Data());
       cout << "mva tree coming from " << tree_name.Data() << " " << tree <<  endl;
       
-      /*
+      
       //TFile* file_output_tree(0);
       if(isystree == 0 && isample == 0) { // recreate at first instance
-         file_output_tree = new TFile( output_file_name_tree, "RECREATE" );
+        file_output_tree = new TFile( output_file_name_tree, "RECREATE" );
       }
       else file_output_tree = new TFile( output_file_name_tree, "UPDATE" );
       
@@ -532,7 +532,7 @@ void theMVAtool::Read(TString template_name)
         // cout <<  var_type << endl;
         tree_control->Branch(var_list[ivar].Data(), &(vec_variables[ivar]), var_type.Data());
       }
-
+      
       for(int ivar=0; ivar<v_cut_name.size(); ivar++)
       {
         TString var_type = "";
@@ -544,7 +544,7 @@ void theMVAtool::Read(TString template_name)
       
       
       
-     // cout << "start branches set " << endl;
+      // cout << "start branches set " << endl;
       // Prepare the event tree
       for(int i=0; i<var_list.size(); i++)
       {
@@ -553,16 +553,16 @@ void theMVAtool::Read(TString template_name)
       for(int i=0; i<v_cut_name.size(); i++)
       {
         
-          tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
-       
+        tree->SetBranchAddress(v_cut_name[i].Data(), &v_cut_float[i]);
+        
       }
       
       
-     // cout << "all branches mva vars set " << endl;
+      // cout << "all branches mva vars set " << endl;
       
-     
+      
       tree_control->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
-      tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/I");*/
+      tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/I");
       tree_control->Branch("MVA_BDT",&MVA_BDT,"MVA_BDT/D");
       tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
       tree_control->Branch("MVA_Luminosity",&MVA_Luminosity, "MVA_Luminosity/D");
@@ -600,8 +600,7 @@ void theMVAtool::Read(TString template_name)
       cout << "all control branches set " << endl;
       tree->SetBranchAddress("MVA_EqLumi",&MVA_EqLumi, &b_MVA_EqLumi);
       tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
-      //tree->SetBranchAddress("MVA_Luminosity",&MVA_Luminosity, &b_MVA_Luminosity);
-      tree->SetBranchAddress("MVA_channel", &MVA_channel,&b_MVA_channel);
+     
       tree->SetBranchAddress("MVA_weight", &MVA_weight,&b_MVA_weight);
       tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
       tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
@@ -627,20 +626,24 @@ void theMVAtool::Read(TString template_name)
       tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
       tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
       tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
-       tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
-       tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
-       tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
-       tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
+      tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
+      tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
+      tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
+      tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
       
-     tree->SetBranchAddress("MVA_weight_puSF",&MVA_weight_puSF, &b_MVA_weight_puSF);
-     tree->SetBranchAddress("MVA_weight_muonSF",&MVA_weight_muonSF, &b_MVA_weight_muonSF);
-     tree->SetBranchAddress("MVA_weight_eletcronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
-     tree->SetBranchAddress("MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
+      tree->SetBranchAddress("MVA_weight_puSF",&MVA_weight_puSF, &b_MVA_weight_puSF);
+      tree->SetBranchAddress("MVA_weight_muonSF",&MVA_weight_muonSF, &b_MVA_weight_muonSF);
+      tree->SetBranchAddress("MVA_weight_eletcronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
+      tree->SetBranchAddress("MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
       
       
       
-     // cout << "all branches set " << endl;
+      // cout << "all branches set " << endl;
       //std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
+      tree->SetBranchAddress("MVA_channel",&MVA_channel,&b_MVA_channel);
+     // tree->SetBranchStatus("*",1);
+     // tree_control = tree->CloneTree();
+     // TBranch *bdtbr = tree_control->Branch("MVA_BDT",&MVA_BDT,"MVA_BDT/D");
       
       //------------------------------------------------------------
       // --- Event loop
@@ -658,7 +661,7 @@ void theMVAtool::Read(TString template_name)
       
       for(int ievt=0; ievt<tree->GetEntries(); ievt++)
       {
-        MVA_weight = 1.; MVA_channel = 9.;
+        MVA_weight = 1.; MVA_channel = 9.; MVA_BDT = 1.;
         
         tree->GetEntry(ievt);
         
@@ -728,68 +731,30 @@ void theMVAtool::Read(TString template_name)
         
         
         // fill trees
+        //cout << template_name+"_uuu"+filename_suffix+ " method"<< endl;
         if(MVA_channel == 0 ) {MVA_BDT =  reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 1 ){MVA_BDT = reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 2 ){MVA_BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method");}
-        else if(MVA_channel == 3 ){MVA_BDT= reader->EvaluateMVA( template_name+"_uuu"+filename_suffix+ " method") ;}
+        else if(MVA_channel == 1 ){MVA_BDT = reader->EvaluateMVA( template_name+"_uue"+filename_suffix+ " method");}
+        else if(MVA_channel == 2 ){MVA_BDT= reader->EvaluateMVA( template_name+"_eeu"+filename_suffix+ " method");}
+        else if(MVA_channel == 3 ){MVA_BDT= reader->EvaluateMVA( template_name+"_eee"+filename_suffix+ " method") ;}
         
-        
-        
-        MVA_EqLumi = MVA_EqLumi;
-        MVA_Luminosity = MVA_Luminosity;
-        MVA_channel = MVA_channel;
-        MVA_weight = MVA_weight;
-        MVA_weight_nom = MVA_weight_nom;
-        MVA_weight_puSF_up  = MVA_weight_puSF_up;
-        MVA_weight_puSF_down = MVA_weight_puSF_down;
-        MVA_weight_electronSF_up = MVA_weight_electronSF_up;
-        MVA_weight_electronSF_down = MVA_weight_electronSF_down;
-        MVA_weight_muonSF_up = MVA_weight_muonSF_up;
-        MVA_weight_muonSF_down = MVA_weight_muonSF_down;
-        MVA_weight_btagSF_cferr1_up = MVA_weight_btagSF_cferr1_up;
-        MVA_weight_btagSF_cferr1_down = MVA_weight_btagSF_cferr1_down;
-        MVA_weight_btagSF_cferr2_up = MVA_weight_btagSF_cferr2_up;
-        MVA_weight_btagSF_cferr2_down = MVA_weight_btagSF_cferr2_down;
-        MVA_weight_btagSF_hf_up = MVA_weight_btagSF_hf_up;
-        MVA_weight_btagSF_hf_down= MVA_weight_btagSF_hf_down;
-        MVA_weight_btagSF_hfstats1_up = MVA_weight_btagSF_hfstats1_up;
-        MVA_weight_btagSF_hfstats1_down = MVA_weight_btagSF_hfstats1_down;
-        MVA_weight_btagSF_hfstats2_up = MVA_weight_btagSF_hfstats2_up;
-        MVA_weight_btagSF_hfstats2_down = MVA_weight_btagSF_hfstats2_down;
-        MVA_weight_btagSF_lf_up = MVA_weight_btagSF_lf_up;
-        MVA_weight_btagSF_lf_down = MVA_weight_btagSF_lf_down;
-        MVA_weight_btagSF_lfstats1_up = MVA_weight_btagSF_lfstats1_up;
-        MVA_weight_btagSF_lfstats1_down = MVA_weight_btagSF_lfstats1_down;
-        MVA_weight_btagSF_lfstats2_up = MVA_weight_btagSF_lfstats2_up;
-        MVA_weight_btagSF_lfstats2_down = MVA_weight_btagSF_lfstats2_down;
-        MVA_weight_puSF = MVA_weight_puSF;
-        MVA_weight_btagSF = MVA_weight_btagSF ;
-        MVA_weight_muonSF = MVA_weight_muonSF ;
-        MVA_weight_electronSF = MVA_weight_electronSF;
-
-        MVA_x1 = MVA_x1;
-        MVA_x2 = MVA_x2;
-        MVA_id1 = MVA_id1;
-        MVA_id2 = MVA_id2;
-        MVA_q = MVA_q;
-        
+        cout << "BDT: " <<  MVA_BDT << endl;
         
         tree_control->Fill();
         
       } //end entries loop
       /*cout << "RAW events" << endl;
-      for(int iC=0; iC<v_cut_name.size(); iC++)
-      {
-        cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << cutArray[iC]<< " = " << ((double) cutArray[iC]/(double)totalEntries) *100<< " % of total " << totalEntries << endl;
-      }
-      cout << "         -- leaving " << endEntries << " = " << ((double) endEntries/ (double) totalEntries)*100 << " % of total " << totalEntries << endl;
-      cout << "WEIGHTED events" << endl;
-      for(int iC=0; iC<v_cut_name.size(); iC++)
-      {
-        cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << wcutArray[iC]* luminosity_rescale<< " = " << ((double) wcutArray[iC]/(double)wtotalEntries) *100<< " % of total " << wtotalEntries * luminosity_rescale<< endl;
-      }
-      cout << "         -- leaving " << wendEntries* luminosity_rescale << " = " << ((double) wendEntries/ (double) wtotalEntries)*100 << " % of total " << wtotalEntries* luminosity_rescale << endl;
-      */
+       for(int iC=0; iC<v_cut_name.size(); iC++)
+       {
+       cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << cutArray[iC]<< " = " << ((double) cutArray[iC]/(double)totalEntries) *100<< " % of total " << totalEntries << endl;
+       }
+       cout << "         -- leaving " << endEntries << " = " << ((double) endEntries/ (double) totalEntries)*100 << " % of total " << totalEntries << endl;
+       cout << "WEIGHTED events" << endl;
+       for(int iC=0; iC<v_cut_name.size(); iC++)
+       {
+       cout << "         -- iC=" << iC << " cutname: " << v_cut_name[iC] << " events passed: " << wcutArray[iC]* luminosity_rescale<< " = " << ((double) wcutArray[iC]/(double)wtotalEntries) *100<< " % of total " << wtotalEntries * luminosity_rescale<< endl;
+       }
+       cout << "         -- leaving " << wendEntries* luminosity_rescale << " = " << ((double) wendEntries/ (double) wtotalEntries)*100 << " % of total " << wtotalEntries* luminosity_rescale << endl;
+       */
       // Write tree
       file_output_tree->cd();
       TString output_tree_name = "Control_" + sample_listread[isample]+"_80X"+postfix;
@@ -804,8 +769,8 @@ void theMVAtool::Read(TString template_name)
     cout<<"Done with "<<sample_listread[isample]<<" sample"<<endl;
   } //end sample loop
   
- 
-     std::cout << "==> Reader() is done!" << std::endl << std::endl;
+  
+  std::cout << "==> Reader() is done!" << std::endl << std::endl;
   
   
 }
