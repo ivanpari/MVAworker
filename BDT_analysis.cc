@@ -177,6 +177,7 @@ int main(int argc, char* argv[])
     thesamplelist.push_back("tZq_amc");
     thesamplelist.push_back("tHq");
     thesamplelist.push_back("WZTo3LNu_amc");
+    //thesamplelist.push_back("WZTo3LNu");
     //thesamplelist.push_back("WZTo3LNu_0Jets_MLL-4To50"); empty
     // thesamplelist.push_back("WZTo3LNu_0Jets_MLL50");
     /* thesamplelist.push_back("WZTo3LNu_1Jets_MLL-4To50");
@@ -195,8 +196,8 @@ int main(int argc, char* argv[])
     // hesamplelist.push_back("STs_amc"); // empty
     // thesamplelist.push_back("STt_top"); // empty
     //thesamplelist.push_back("STt_atop"); // empty
-    //  thesamplelist.push_back("STtW_top"); // empty
-    //  thesamplelist.push_back("STtW_atop"); // empty
+     thesamplelist.push_back("STtW_top"); // empty
+      thesamplelist.push_back("STtW_atop"); // empty
     thesamplelist.push_back("ttHToNonbb");
     thesamplelist.push_back("ttHTobb");
     thesamplelist.push_back("tWll");
@@ -216,9 +217,12 @@ int main(int argc, char* argv[])
  // thesamplelist_forreading.push_back("WZTo3LNu");
  // thesamplelist_forreading.push_back("WZTo3LNu_amc");
   //other signal
-  
-  
-  
+ /* thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptcorrect");
+  thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptwrong");
+  thesamplelist_forreading.push_back("WZTo3LNu_amc_new");
+  thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xbb");
+  thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xcc");
+  thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xlight");*/
   //-------------------
   
   //-----------------------------------------------------------------------------------------
@@ -234,8 +238,8 @@ int main(int argc, char* argv[])
   //NB : treat leaves/variables "Weight" and "Channel" and "region" separately in MVAtool
  
   if(coupling.Contains("Zut") && region_name.Contains("singletop")){
-  thevarlist.push_back("MVA_Zboson_pt");
-  thevarlist.push_back("MVA_SMtop_eta");
+ // thevarlist.push_back("MVA_Zboson_pt");
+  //thevarlist.push_back("MVA_SMtop_eta");
   thevarlist.push_back("MVA_mlb");
   thevarlist.push_back("MVA_dPhiWlepb");
   thevarlist.push_back("MVA_charge_asym");
@@ -244,25 +248,28 @@ int main(int argc, char* argv[])
   thevarlist.push_back("MVA_dRZWlep");
  // thevarlist.push_back("MVA_deltaRWlepJet_max");
  //   thevarlist.push_back("MVA_deltaRWlepJet_min");
-    thevarlist.push_back(" MVA_ptWQ");
+    thevarlist.push_back("MVA_ptWQ");
     //thevarlist.push_back("MVA_Zboson_M");
+     thevarlist.push_back("MVA_SMtop_rap");
+   //  thevarlist.push_back("MVA_Wlep_Charge");
   
   }
   else   if(coupling.Contains("Zct") && region_name.Contains("singletop")){
     thevarlist.push_back("MVA_TotalInvMass_lep");
-    thevarlist.push_back("MVA_Zboson_pt");
+   // thevarlist.push_back("MVA_Zboson_pt");
     thevarlist.push_back("MVA_mlb");
     thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
     thevarlist.push_back("MVA_SMtop_eta");
     thevarlist.push_back("MVA_dPhiWlepb");
     thevarlist.push_back("MVA_dRZWlep");
+ //   thevarlist.push_back("MVA_SMtop_rap");
   //  thevarlist.push_back("MVA_Zboson_M");
 
   }
   else if(region_name.Contains("toppair") && coupling.Contains("Zut") ){
 
     thevarlist.push_back("MVA_dPhiZWlep");
-
+     // thevarlist.push_back("MVA_SMtop_rap");
        thevarlist.push_back("MVA_NJets_CSVv2M");
      thevarlist.push_back("MVA_SMtop_M");
     thevarlist.push_back("MVA_mlb");
@@ -276,17 +283,19 @@ int main(int argc, char* argv[])
      thevarlist.push_back("MVA_FCNCtop_M");
     thevarlist.push_back("MVA_Zboson_M");
     //  thevarlist.push_back("MVA_dRZc");
-   // thevarlist.push_back("MVA_dPhiZc");
+    thevarlist.push_back("MVA_dPhiZb");
     // thevarlist.push_back("MVA_dRSMFCNCtop");
         thevarlist.push_back("MVA_dRZb");
     thevarlist.push_back("MVA_dRZWlep");
- 
+  //  thevarlist.push_back("MVA_FCNCtop_rap");
    
 
 
     
   }
   else if(region_name.Contains("toppair") && coupling.Contains("Zct") ){
+  //   thevarlist.push_back("MVA_SMtop_rap");
+   //  thevarlist.push_back("MVA_FCNCtop_rap");
      thevarlist.push_back("MVA_NJets_CSVv2M");
      thevarlist.push_back("MVA_mlb");
       thevarlist.push_back("MVA_FCNCtop_M");
@@ -296,10 +305,11 @@ int main(int argc, char* argv[])
       thevarlist.push_back("MVA_dRZc");
        thevarlist.push_back("MVA_dRSMjetLightjet");
       thevarlist.push_back("MVA_dRZWlep");
-    //thevarlist.push_back("MVA_dPhiZWlep");
-    
+    thevarlist.push_back("MVA_dPhiZWlep");
+     //thevarlist.push_back("MVA_SMtop_rap");
      // check me
     thevarlist.push_back("MVA_Zboson_M");
+        thevarlist.push_back("MVA_dRZb");
    // thevarlist.push_back("MVA_TotalInvMass_jet");
   }
   

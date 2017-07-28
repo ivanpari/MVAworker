@@ -295,7 +295,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   // Isis
   /*if(region_name.Contains("toppair") factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=5%:MaxDepth=3:BoostType=Grad:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:Shrinkage=0.5");
    else if(region_name.Contains("toppair")factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:Ntrees=25:MinNodeSize=2.5%:MaxDepth=3:BoostType=Adaboost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:NegWeightTreatment=Pray:"); // ST method*/
-  if(region_name.Contains("toppair") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=250:MinNodeSize=5%:BoostType=Grad:Shrinkage=0.2:UseBaggedBoost:BaggedSampleFraction=0.8:SeparationType=GiniIndex:nCuts=15:MaxDepth=3:NegWeightTreatment=Pray" );
+  if(region_name.Contains("toppair") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=225:MinNodeSize=5%:BoostType=Grad:Shrinkage=0.2:UseBaggedBoost:BaggedSampleFraction=0.8:SeparationType=GiniIndex:nCuts=15:MaxDepth=3:NegWeightTreatment=Pray" );
   else if(region_name.Contains("singletop") ) factory->BookMethod( TMVA::Types::kBDT,method_title.Data(),"!H:!V:NTrees=25:MinNodeSize=5%:BoostType=Grad:Shrinkage=0.3::UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=15:MaxDepth=3:NegWeightTreatment=Pray:PruneMethod=NoPruning" );
   // cout << "set weights directory " << placeOfWeights << endl;
   output_file->cd();
@@ -385,7 +385,9 @@ void theMVAtool::Read(TString template_name)
   Double_t         MVA_Luminosity;
   Int_t            MVA_channel;
   Float_t          MVA_weight;
+  Double_t        MVA_weight_nloSF;
   Double_t         MVA_weight_nom;
+  Double_t         MVA_weightWZcorr;
   Double_t         MVA_weight_puSF_up;
   Double_t         MVA_weight_puSF_down;
   Double_t         MVA_weight_electronSF_up;
@@ -412,8 +414,12 @@ void theMVAtool::Read(TString template_name)
   Double_t MVA_weight_btagSF ;
   Double_t MVA_weight_muonSF ;
   Double_t MVA_weight_electronSF ;
+  Double_t        MVA_mWt;
+  Double_t        MVA_mWt2;
   
-  
+  TBranch         *b_MVA_mWt;
+  TBranch         *b_MVA_mWt2;
+  TBranch       *b_MVA_Weight_nloSF;
   TBranch        *b_MVA_weight_puSF;
   TBranch        *b_MVA_weight_btagSF ;
   TBranch        *b_MVA_weight_muonSF ;
@@ -421,6 +427,7 @@ void theMVAtool::Read(TString template_name)
   TBranch        *b_MVA_channel;   //!
   TBranch        *b_MVA_weight;   //!
   TBranch        *b_MVA_weight_nom;
+  TBranch        *b_MVA_weightWZcorr;
   TBranch        *b_MVA_weight_puSF_up;   //!
   TBranch        *b_MVA_weight_puSF_down;   //!
   TBranch        *b_MVA_weight_electronSF_up;   //!
@@ -470,7 +477,7 @@ void theMVAtool::Read(TString template_name)
   //Loop on samples, syst., events ---> Fill histogram/channel --> Write()
   TString postfix = "";
   
-  int systematicsForNewTree = 1; //5
+  int systematicsForNewTree = 5; //5
   
   
   
@@ -484,7 +491,7 @@ void theMVAtool::Read(TString template_name)
     
     
     // prepare output controltree
-    TString output_file_name_tree = placeOutputReading+"/TreeOfReader_" + template_name + filename_suffix + ".root";
+    TString output_file_name_tree = placeOutputReading+"/Reader_" + template_name + filename_suffix + ".root";
     TFile* file_output_tree(0);
     
     for(int isystree = 0; isystree < systematicsForNewTree; isystree++)
@@ -560,8 +567,9 @@ void theMVAtool::Read(TString template_name)
       
       // cout << "all branches mva vars set " << endl;
       
-      
+      tree_control->Branch("MVA_weight_nloSF", &MVA_weight_nloSF , "MVA_weight_nloSF/D");
       tree_control->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
+      tree_control->Branch("MVA_weightWZcorr", &MVA_weightWZcorr, "MVA_weightWZcorr/D");
       tree_control->Branch("MVA_channel", &MVA_channel, "MVA_channel/I");
       tree_control->Branch("MVA_BDT",&MVA_BDT,"MVA_BDT/D");
       tree_control->Branch("MVA_EqLumi",&MVA_EqLumi, "MVA_EqLumi/D");
@@ -572,7 +580,7 @@ void theMVAtool::Read(TString template_name)
       tree_control->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/D");
       tree_control->Branch("MVA_weight_puSF",&MVA_weight_puSF, "MVA_weight_puSF/D");
       tree_control->Branch("MVA_weight_muonSF",&MVA_weight_muonSF, "MVA_weight_muonSF/D");
-      tree_control->Branch("MVA_weight_eletcronSF",&MVA_weight_electronSF, "MVA_weight_electronSF/D");
+      tree_control->Branch("MVA_weight_electronSF",&MVA_weight_electronSF, "MVA_weight_electronSF/D");
       tree_control->Branch("MVA_weight_btagSF",&MVA_weight_btagSF, "MVA_weight_btagSF/D");
       tree_control->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/D");
       tree_control->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/D");
@@ -601,8 +609,10 @@ void theMVAtool::Read(TString template_name)
       tree->SetBranchAddress("MVA_EqLumi",&MVA_EqLumi, &b_MVA_EqLumi);
       tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
      
+      tree->SetBranchAddress("MVA_weight_nloSF", &MVA_weight_nloSF , &b_MVA_Weight_nloSF);
       tree->SetBranchAddress("MVA_weight", &MVA_weight,&b_MVA_weight);
       tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
+      tree->SetBranchAddress("MVA_weightWZcorr", &MVA_weightWZcorr, &b_MVA_weightWZcorr);
       tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
       tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
       tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
@@ -633,7 +643,7 @@ void theMVAtool::Read(TString template_name)
       
       tree->SetBranchAddress("MVA_weight_puSF",&MVA_weight_puSF, &b_MVA_weight_puSF);
       tree->SetBranchAddress("MVA_weight_muonSF",&MVA_weight_muonSF, &b_MVA_weight_muonSF);
-      tree->SetBranchAddress("MVA_weight_eletcronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
+      tree->SetBranchAddress("MVA_weight_electronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
       tree->SetBranchAddress("MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
       
       
@@ -737,7 +747,7 @@ void theMVAtool::Read(TString template_name)
         else if(MVA_channel == 2 ){MVA_BDT= reader->EvaluateMVA( template_name+"_eeu"+filename_suffix+ " method");}
         else if(MVA_channel == 3 ){MVA_BDT= reader->EvaluateMVA( template_name+"_eee"+filename_suffix+ " method") ;}
         
-        cout << "BDT: " <<  MVA_BDT << endl;
+      //  cout << "BDT: " <<  MVA_BDT << endl;
         
         tree_control->Fill();
         
@@ -759,6 +769,7 @@ void theMVAtool::Read(TString template_name)
       file_output_tree->cd();
       TString output_tree_name = "Control_" + sample_listread[isample]+"_80X"+postfix;
       if( sample_listread[isample].Contains("data")) output_tree_name = "Control_" + sample_listread[isample]+postfix;
+     // cout << "saving " << output_tree_name << endl;
       tree_control->Write(output_tree_name.Data(), TObject::kOverwrite);
       file_output_tree->Close();
       delete tree;
