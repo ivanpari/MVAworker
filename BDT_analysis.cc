@@ -209,7 +209,10 @@ int main(int argc, char* argv[])
     thesamplelist_forreading.push_back("fake");
   }
   else{  thesamplelist.push_back("fake");}
- // thesamplelist_forreading.push_back("TTJets_powheg");
+  thesamplelist_forreading.push_back("TTJets_powheg");
+  thesamplelist_forreading.push_back("DYJets50_amc");
+  thesamplelist_forreading.push_back("fake_80X_nonpromptinW");
+  thesamplelist_forreading.push_back("fake_80X_nonpromptinZ");
  // thesamplelist_forreading.push_back("Zjets50_1Jets");
 //  thesamplelist_forreading.push_back("Zjets50_3Jets");
  // thesamplelist_forreading.push_back("Zjets50_4Jets");
@@ -217,12 +220,28 @@ int main(int argc, char* argv[])
  // thesamplelist_forreading.push_back("WZTo3LNu");
  // thesamplelist_forreading.push_back("WZTo3LNu_amc");
   //other signal
- /* thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptcorrect");
-  thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptwrong");
-  thesamplelist_forreading.push_back("WZTo3LNu_amc_new");
+ // thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptcorrect");
+ // thesamplelist_forreading.push_back("TTJets_powheg_80Xnonpromptwrong");
+ /* thesamplelist_forreading.push_back("WZTo3LNu_amc_new");
   thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xbb");
   thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xcc");
   thesamplelist_forreading.push_back("WZTo3LNu_amc_new_80Xlight");*/
+  
+  
+  
+  /*    thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zct_nopt");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_nopt");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_nopt");
+  
+      thesamplelist_forreading.push_back("NP_overlay_ST_FCNC_zut_nopt");
+
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_nopt");
+      thesamplelist_forreading.push_back("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_nopt");
+  */
+  
+//  thesamplelist_forreading.push_back("fake_80X_nonpromptinW");
+ // thesamplelist_forreading.push_back("fake_80X_nonpromptinZ");
+  
   //-------------------
   
   //-----------------------------------------------------------------------------------------

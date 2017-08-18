@@ -175,7 +175,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   
   // Create the factory object
   //TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" ); //some Transformations can trigger warnings
-  TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:!DrawProgressBar:Transformations=I:AnalysisType=Classification" );
+  TMVA::Factory* factory = new TMVA::Factory(bdt_type.Data(), output_file, "!V:!Silent:Color:!DrawProgressBar:AnalysisType=Classification" );
   
   // Define the input variables that shall be used for the MVA training
   for(int i=0; i<var_list.size(); i++)
@@ -379,7 +379,19 @@ void theMVAtool::Read(TString template_name)
     reader->BookMVA( MVA_method_name, weightfile );
   }
   
+  Double_t MVA_DeltaR_NonIsoLepJet;
+  Double_t MVA_DeltaR_lep0Jet;
+  Double_t MVA_DeltaR_lep1Jet;
+  Double_t MVA_DeltaR_lep2Jet;
+  Double_t MVA_DeltaR_MinLepJet;
+  Double_t MVA_DeltaR_MinLepNonIsoJet;
   
+  Float_t MVA_Zboson_M;
+  Float_t MVA_NJets_CSVv2M;
+    
+  
+  
+  Float_t     MVA_lepton2_pt;
   Double_t         MVA_BDT;
   Double_t         MVA_EqLumi;
   Double_t         MVA_Luminosity;
@@ -464,9 +476,18 @@ void theMVAtool::Read(TString template_name)
   TBranch         *b_MVA_q;
   TBranch         *b_MVA_Luminosity;
   TBranch         *b_MVA_EqLumi;
+  TBranch         *b_MVA_lepton2_pt;
   
+  TBranch *b_MVA_DeltaR_NonIsoLepJet;
+  TBranch *b_MVA_DeltaR_lep0Jet;
+  TBranch *b_MVA_DeltaR_lep1Jet;
+  TBranch *b_MVA_DeltaR_lep2Jet;
+  TBranch *b_MVA_DeltaR_MinLepJet;
+  TBranch *b_MVA_DeltaR_MinLepNonIsoJet;
   
-  
+  TBranch *b_MVA_Zboson_M;
+  TBranch *b_MVA_NJets_CSVv2M;
+
   
   
   
@@ -477,7 +498,7 @@ void theMVAtool::Read(TString template_name)
   //Loop on samples, syst., events ---> Fill histogram/channel --> Write()
   TString postfix = "";
   
-  int systematicsForNewTree = 5; //5
+  int systematicsForNewTree = 5;//1; //5
   
   
   
@@ -536,6 +557,7 @@ void theMVAtool::Read(TString template_name)
         TString var_type ="";
         var_type= var_list[ivar] + "/F";
         
+        if(var_list[ivar].Contains("Zboson_M")|| var_list[ivar].Contains("MVA_NJets_CSVv2M")) continue;
         // cout <<  var_type << endl;
         tree_control->Branch(var_list[ivar].Data(), &(vec_variables[ivar]), var_type.Data());
       }
@@ -545,6 +567,7 @@ void theMVAtool::Read(TString template_name)
         TString var_type = "";
         //if(!v_cut_name[ivar].Contains("nJet") && !v_cut_name[ivar].Contains("NJet") && !v_cut_name[ivar].Contains("Charge") ) var_type = v_cut_name[ivar] + "/F";
         //else var_type =  v_cut_name[ivar] + "/I";
+        if(var_list[ivar].Contains("Zboson_M")|| var_list[ivar].Contains("MVA_NJets_CSVv2M")) continue;
         var_type = v_cut_name[ivar] + "/F";
         tree_control->Branch(v_cut_name[ivar].Data(), &v_cut_float[ivar], var_type.Data());
       }
@@ -567,6 +590,7 @@ void theMVAtool::Read(TString template_name)
       
       // cout << "all branches mva vars set " << endl;
       
+      tree_control->Branch("MVA_lepton2_pt",&MVA_lepton2_pt, "MVA_lepton2_pt/F");
       tree_control->Branch("MVA_weight_nloSF", &MVA_weight_nloSF , "MVA_weight_nloSF/D");
       tree_control->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
       tree_control->Branch("MVA_weightWZcorr", &MVA_weightWZcorr, "MVA_weightWZcorr/D");
@@ -605,10 +629,22 @@ void theMVAtool::Read(TString template_name)
       tree_control->Branch("MVA_id1", &MVA_id1, "MVA_b_id1/I");
       tree_control->Branch("MVA_id2", &MVA_id2, "MVA_b_id2/I");
       tree_control->Branch("MVA_q", &MVA_q, "MVA_q/D");
+      
+      tree_control->Branch("MVA_DeltaR_NonIsoLepJet", &MVA_DeltaR_NonIsoLepJet, "MVA_DeltaR_NonIsoLepJet/D");
+      tree_control->Branch("MVA_DeltaR_lep0Jet", &MVA_DeltaR_lep0Jet, "MVA_DeltaR_lep0Jet/D");
+      tree_control->Branch("MVA_DeltaR_lep1Jet", &MVA_DeltaR_lep1Jet, "MVA_DeltaR_lep1Jet/D");
+      tree_control->Branch("MVA_DeltaR_lep2Jet", &MVA_DeltaR_lep2Jet, "MVA_DeltaR_lep2Jet/D");
+      tree_control->Branch("MVA_DeltaR_MinLepJet", &MVA_DeltaR_MinLepJet, "MVA_DeltaR_MinLepJet/D");
+      tree_control->Branch("MVA_DeltaR_MinLepNonIsoJet", &MVA_DeltaR_MinLepNonIsoJet, "MVA_DeltaR_MinLepNonIsoJet/D");
+      
+        tree_control->Branch("MVA_Zboson_M", &MVA_Zboson_M, "MVA_Zboson_M/F");
+        tree_control->Branch("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, "MVA_NJets_CSVv2M/F");
+        
+      
       cout << "all control branches set " << endl;
       tree->SetBranchAddress("MVA_EqLumi",&MVA_EqLumi, &b_MVA_EqLumi);
       tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
-     
+      tree->SetBranchAddress("MVA_lepton2_pt", &MVA_lepton2_pt, &b_MVA_lepton2_pt);
       tree->SetBranchAddress("MVA_weight_nloSF", &MVA_weight_nloSF , &b_MVA_Weight_nloSF);
       tree->SetBranchAddress("MVA_weight", &MVA_weight,&b_MVA_weight);
       tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
@@ -646,8 +682,15 @@ void theMVAtool::Read(TString template_name)
       tree->SetBranchAddress("MVA_weight_electronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
       tree->SetBranchAddress("MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
       
-      
-      
+      tree->SetBranchAddress("MVA_DeltaR_NonIsoLepJet", &MVA_DeltaR_NonIsoLepJet, &b_MVA_DeltaR_NonIsoLepJet);
+      tree->SetBranchAddress("MVA_DeltaR_lep0Jet", &MVA_DeltaR_lep0Jet, &b_MVA_DeltaR_lep0Jet);
+      tree->SetBranchAddress("MVA_DeltaR_lep1Jet", &MVA_DeltaR_lep1Jet, &b_MVA_DeltaR_lep1Jet);
+      tree->SetBranchAddress("MVA_DeltaR_lep2Jet", &MVA_DeltaR_lep2Jet, &b_MVA_DeltaR_lep2Jet);
+      tree->SetBranchAddress("MVA_DeltaR_MinLepJet", &MVA_DeltaR_MinLepJet, &b_MVA_DeltaR_MinLepJet);
+      tree->SetBranchAddress("MVA_DeltaR_MinLepNonIsoJet", &MVA_DeltaR_MinLepNonIsoJet, &b_MVA_DeltaR_MinLepNonIsoJet);
+  
+        tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+      tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
       // cout << "all branches set " << endl;
       //std::cout << "--- Processing: " << tree->GetEntries() << " events" << std::endl;
       tree->SetBranchAddress("MVA_channel",&MVA_channel,&b_MVA_channel);
