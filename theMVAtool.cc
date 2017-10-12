@@ -221,15 +221,15 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
     
     // You can add an arbitrary number of signal or background trees
     //NB : can't account for luminosity rescaling here, but it is not necessary for the training (only relative weights matter ?)
-    if(!bdt_type.Contains("fake")){
+    /*if(region_name.Contains("toppair")){
+      if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "fabs(MVA_weight)" );}
+      else {factory->AddBackgroundTree( tree, backgroundWeight ); factory->SetBackgroundWeightExpression( "fabs(MVA_weight)" );}
+    }
+    else{*/
       if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "MVA_weight" );}
       else {factory->AddBackgroundTree( tree, backgroundWeight ); factory->SetBackgroundWeightExpression( "MVA_weight" );}
-    }
-    else{
-      if(sample_list[isample].Contains("FCNC") ){factory->AddSignalTree ( tree, signalWeight ); factory->SetSignalWeightExpression( "MVA_weight" );}
-      else {factory->AddBackgroundTree( tree, backgroundWeight );}
       
-    }
+   // }
   }
   
   
@@ -279,6 +279,7 @@ void theMVAtool::Train_Test_Evaluate(TString channel, TString bdt_type = "BDT")
   
   if(tmp != "") {mycuts+= tmp; mycutb+= tmp;}
   
+  cout<<"Total cut chain : "<<mycuts<<endl;
   
   //--------------------------------
   

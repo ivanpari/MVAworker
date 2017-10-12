@@ -173,10 +173,8 @@ int main(int argc, char* argv[])
   }
   
   //BKG
-  if(!bdt_type.Contains("fake")){
-    thesamplelist.push_back("tZq_amc");
-    thesamplelist.push_back("tHq");
-    thesamplelist.push_back("WZTo3LNu_amc");
+ 
+     thesamplelist.push_back("WZTo3LNu_amc");
     //thesamplelist.push_back("WZTo3LNu");
     //thesamplelist.push_back("WZTo3LNu_0Jets_MLL-4To50"); empty
     // thesamplelist.push_back("WZTo3LNu_0Jets_MLL50");
@@ -188,28 +186,29 @@ int main(int argc, char* argv[])
      thesamplelist.push_back("WZTo3LNu_3Jets_MLL50");*/
     thesamplelist.push_back("ZZTo4L");
     thesamplelist.push_back("TTZToLLNuNu_amc");
-    thesamplelist.push_back("TTWJetsToLNu_amc");
-    //thesamplelist.push_back("ttZ");
-   // thesamplelist.push_back("TTZToQQ_amc");
-    thesamplelist.push_back("WZZ_amc");
+    thesamplelist.push_back("tZq_amc");
+    thesamplelist_forreading.push_back("TTWJetsToLNu_amc");
+    //thesamplelist_forreading.push_back("ttZ");
+   // thesamplelist_forreading.push_back("TTZToQQ_amc");
+    thesamplelist_forreading.push_back("WZZ_amc");
     
     // hesamplelist.push_back("STs_amc"); // empty
-    // thesamplelist.push_back("STt_top"); // empty
-    //thesamplelist.push_back("STt_atop"); // empty
-     thesamplelist.push_back("STtW_top"); // empty
-      thesamplelist.push_back("STtW_atop"); // empty
-    thesamplelist.push_back("ttHToNonbb");
-    thesamplelist.push_back("ttHTobb");
-    thesamplelist.push_back("tWll");
-    //thesamplelist.push_back("ttWJets");
-    thesamplelist.push_back("ZZZ_amc");
-    
-    
+    // thesamplelist_forreading.push_back("STt_top"); // empty
+    //thesamplelist_forreading.push_back("STt_atop"); // empty
+     thesamplelist_forreading.push_back("STtW_top"); // empty
+      thesamplelist_forreading.push_back("STtW_atop"); // empty
+    thesamplelist_forreading.push_back("ttHToNonbb");
+    thesamplelist_forreading.push_back("ttHTobb");
+    thesamplelist_forreading.push_back("tWll");
+    //thesamplelist_forreading.push_back("ttWJets");
+    thesamplelist_forreading.push_back("ZZZ_amc");
+  
+  thesamplelist_forreading.push_back("tHq");
+  
+  
     //FAKES
     thesamplelist_forreading.push_back("fake");
-  }
-  else{  thesamplelist.push_back("fake");}
-  thesamplelist_forreading.push_back("TTJets_powheg");
+   thesamplelist_forreading.push_back("TTJets_powheg");
   thesamplelist_forreading.push_back("DYJets50_amc");
   thesamplelist_forreading.push_back("fake_80X_nonpromptinW");
   thesamplelist_forreading.push_back("fake_80X_nonpromptinZ");
@@ -255,210 +254,103 @@ int main(int argc, char* argv[])
   
   //-------------------
   //NB : treat leaves/variables "Weight" and "Channel" and "region" separately in MVAtool
- 
-  if(coupling.Contains("Zut") && region_name.Contains("singletop")){
- // thevarlist.push_back("MVA_Zboson_pt");
-  //thevarlist.push_back("MVA_SMtop_eta");
-  thevarlist.push_back("MVA_mlb");
-  thevarlist.push_back("MVA_dPhiWlepb");
-  thevarlist.push_back("MVA_charge_asym");
-  thevarlist.push_back("MVA_TotalInvMass_lep");
-  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-  thevarlist.push_back("MVA_dRZWlep");
- // thevarlist.push_back("MVA_deltaRWlepJet_max");
- //   thevarlist.push_back("MVA_deltaRWlepJet_min");
+  if(coupling.Contains("Zut") && region_name.Contains("toppair")){
+    //    thevarlist.push_back("MVA_Zboson_pt");
+    thevarlist.push_back("MVA_SMtop_eta");
+    thevarlist.push_back("MVA_mlb");
+    thevarlist.push_back("MVA_dPhiWlepb");
+    thevarlist.push_back("MVA_deltaRWlepJet_min");
+    thevarlist.push_back("MVA_Zboson_M");
+    thevarlist.push_back("MVA_dPhiZWlep");
+    thevarlist.push_back("MVA_NJets_CSVv2M");
+    thevarlist.push_back("MVA_dRWlepb");
+    thevarlist.push_back("MVA_FCNCtop_M");
+    thevarlist.push_back("MVA_dRZc");
+    thevarlist.push_back("MVA_dRSMjetLightjet");
+  }
+  else if(coupling.Contains("Zut") && region_name.Contains("singletop")){
+    
+    thevarlist.push_back("MVA_SMtop_eta");
+    thevarlist.push_back("MVA_mlb");
+    thevarlist.push_back("MVA_dPhiWlepb");
+    thevarlist.push_back("MVA_charge_asym");
+    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+    thevarlist.push_back("MVA_dRWlepb");
+    thevarlist.push_back("MVA_TotalHt_lep");
+    //thevarlist.push_back("MVA_TotalInvMass_lep");
+    thevarlist.push_back("MVA_dRZWlep");
     thevarlist.push_back("MVA_ptWQ");
-    //thevarlist.push_back("MVA_Zboson_M");
-     thevarlist.push_back("MVA_SMtop_rap");
-   //  thevarlist.push_back("MVA_Wlep_Charge");
-  
   }
   else   if(coupling.Contains("Zct") && region_name.Contains("singletop")){
     thevarlist.push_back("MVA_TotalInvMass_lep");
-   // thevarlist.push_back("MVA_Zboson_pt");
+    // thevarlist.push_back("MVA_Zboson_pt");
     thevarlist.push_back("MVA_mlb");
     thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
     thevarlist.push_back("MVA_SMtop_eta");
     thevarlist.push_back("MVA_dPhiWlepb");
     thevarlist.push_back("MVA_dRZWlep");
- //   thevarlist.push_back("MVA_SMtop_rap");
-  //  thevarlist.push_back("MVA_Zboson_M");
-
-  }
-  else if(region_name.Contains("toppair") && coupling.Contains("Zut") ){
-
-    thevarlist.push_back("MVA_dPhiZWlep");
-     // thevarlist.push_back("MVA_SMtop_rap");
-       thevarlist.push_back("MVA_NJets_CSVv2M");
-     thevarlist.push_back("MVA_SMtop_M");
-    thevarlist.push_back("MVA_mlb");
-     thevarlist.push_back("MVA_dRWlepb");
-  //  thevarlist.push_back("MVA_dPhiWlepb");
-  //  thevarlist.push_back("MVA_TotalInvMass_jet");
-    thevarlist.push_back("MVA_TotalHt_lep");
-   // thevarlist.push_back("MVA_TotalInvMass_lep");
-   // thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-  //  thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
-     thevarlist.push_back("MVA_FCNCtop_M");
-    thevarlist.push_back("MVA_Zboson_M");
-    //  thevarlist.push_back("MVA_dRZc");
-    thevarlist.push_back("MVA_dPhiZb");
-    // thevarlist.push_back("MVA_dRSMFCNCtop");
-        thevarlist.push_back("MVA_dRZb");
-    thevarlist.push_back("MVA_dRZWlep");
-  //  thevarlist.push_back("MVA_FCNCtop_rap");
-   
-
-
+    //   thevarlist.push_back("MVA_SMtop_rap");
+    //  thevarlist.push_back("MVA_Zboson_M");
     
   }
   else if(region_name.Contains("toppair") && coupling.Contains("Zct") ){
-  //   thevarlist.push_back("MVA_SMtop_rap");
-   //  thevarlist.push_back("MVA_FCNCtop_rap");
-     thevarlist.push_back("MVA_NJets_CSVv2M");
-     thevarlist.push_back("MVA_mlb");
-      thevarlist.push_back("MVA_FCNCtop_M");
-     thevarlist.push_back("MVA_dRWlepb");
-     thevarlist.push_back("MVA_TotalInvMass");
-    thevarlist.push_back("MVA_Bdis_Lightjet");
-      thevarlist.push_back("MVA_dRZc");
-       thevarlist.push_back("MVA_dRSMjetLightjet");
-      thevarlist.push_back("MVA_dRZWlep");
-    thevarlist.push_back("MVA_dPhiZWlep");
-     //thevarlist.push_back("MVA_SMtop_rap");
-     // check me
-    thevarlist.push_back("MVA_Zboson_M");
-        thevarlist.push_back("MVA_dRZb");
-   // thevarlist.push_back("MVA_TotalInvMass_jet");
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  /*if(region_name.Contains("singletop") && region_name.Contains("toppair")){
-    thevarlisttree.push_back("MVA_Zboson_pt");
-    thevarlisttree.push_back("MVA_dRWlepb"); // very good
-    thevarlisttree.push_back("MVA_dPhiWlepb"); // very good
-    thevarlisttree.push_back("MVA_charge_asym");
-    thevarlisttree.push_back("MVA_dRZWlep");
-    thevarlisttree.push_back("MVA_bdiscCSVv2_jet_0");
-    thevarlisttree.push_back("MVA_cdiscCvsB_jet_0");
-    thevarlisttree.push_back("MVA_mlb");
-    thevarlisttree.push_back("MVA_cdiscCvsL_jet_0");
-  } else if (region_name.Contains("toppair")){
-    thevarlisttree.push_back("MVA_cdiscCvsB_jet_1");
-    thevarlisttree.push_back("MVA_nJets_CharmL");
-    thevarlisttree.push_back("MVA_dRZc");
-    thevarlisttree.push_back("MVA_NJets_CSVv2M");
-    thevarlisttree.push_back("MVA_dRWlepb"); // very good
-    thevarlisttree.push_back("MVA_mlb");
-    thevarlisttree.push_back("MVA_FCNCtop_M");
-  }
-*/
-  /*  if(bdt_type.Contains("fake")){
-      thevarlist.push_back("MVA_dRWlepb");
-      thevarlist.push_back("MVA_dPhiWlepb");
-    }
-   else if(coupling.Contains("Zut") && region_name.Contains("singletop")){
-    cout << "in singletop zut " << endl;
-    thevarlist.push_back("MVA_Zboson_pt");
-    thevarlist.push_back("MVA_dRWlepb"); // very good
-    thevarlist.push_back("MVA_dPhiWlepb"); // very good
-    thevarlist.push_back("MVA_charge_asym");
-   // thevarlist.push_back("MVA_Wlep_Charge");
-    thevarlist.push_back("MVA_dRZWlep");
-    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-   //thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    thevarlist.push_back("MVA_mlb");
-  }
-  else if(coupling.Contains("Zct") && region_name.Contains("singletop")){
-    cout << "in singletop zct " << endl;
-    thevarlist.push_back("MVA_Zboson_pt");
-    thevarlist.push_back("MVA_dRWlepb"); // very good
-    thevarlist.push_back("MVA_dPhiWlepb"); // very good
-  //  thevarlist.push_back("MVA_charge_asym");
-  //  thevarlist.push_back("MVA_Wlep_Charge");
-    thevarlist.push_back("MVA_dRZWlep");
-    thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    thevarlist.push_back("MVA_mlb");
-  }
-  else if(region_name.Contains("toppair") && coupling.Contains("Zut")){
-    // thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-    // thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
-    thevarlist.push_back("MVA_cdiscCvsB_jet_1");
-   // thevarlist.push_back("MVA_cdiscCvsL_jet_1");
-    thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-   // thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    thevarlist.push_back("MVA_nJets_CharmL");
-    //thevarlist.push_back("MVA_nJets_CharmM");
-    thevarlist.push_back("MVA_dRZc");
+    //   thevarlist.push_back("MVA_SMtop_rap");
+    //  thevarlist.push_back("MVA_FCNCtop_rap");
     thevarlist.push_back("MVA_NJets_CSVv2M");
-   // thevarlist.push_back("MVA_dPhiZWlep");
-    thevarlist.push_back("MVA_dRWlepb"); // very good
-    //thevarlist.push_back("MVA_dPhiWlepb"); // very good
-    thevarlist.push_back("MVA_dRZWlep");
     thevarlist.push_back("MVA_mlb");
-    //thevarlist.push_back("MVA_charge_asym");
-    //thevarlist.push_back("MVA_Wlep_Charge");
     thevarlist.push_back("MVA_FCNCtop_M");
-
-    
-    
-  }
-  else if(region_name.Contains("toppair") && coupling.Contains("Zct"))
-  {
-  //  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
-   // thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
-  //  thevarlist.push_back("MVA_cdiscCvsB_jet_1");
-    thevarlist.push_back("MVA_cdiscCvsL_jet_1");
-  //  thevarlist.push_back("MVA_cdiscCvsB_jet_0");
-     thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    thevarlist.push_back("MVA_nJets_CharmL");
-  //  thevarlist.push_back("MVA_nJets_CharmM");
-  //thevarlist.push_back("MVA_nJets_CharmT");
+    thevarlist.push_back("MVA_dRWlepb");
+    thevarlist.push_back("MVA_TotalInvMass");
+    thevarlist.push_back("MVA_Bdis_Lightjet");
     thevarlist.push_back("MVA_dRZc");
-    thevarlist.push_back("MVA_NJets_CSVv2M");
-   // thevarlist.push_back("MVA_NJets_CSVv2T");
-   // thevarlist.push_back("MVA_dPhiZWlep");
-    thevarlist.push_back("MVA_dRWlepb"); // very good
-   // thevarlist.push_back("MVA_dPhiWlepb"); // very good
+    thevarlist.push_back("MVA_dRSMjetLightjet");
     thevarlist.push_back("MVA_dRZWlep");
-    thevarlist.push_back("MVA_mlb");
-    //thevarlist.push_back("MVA_charge_asym");
-    //thevarlist.push_back("MVA_Wlep_Charge");
-    thevarlist.push_back("MVA_FCNCtop_M");*/
-/*
-    
-  //  thevarlist.push_back("MVA_nJets_CharmM");
-  //  thevarlist.push_back("MVA_cdiscCvsB_jet_1");
-
-    thevarlist.push_back("MVA_cdiscCvsL_jet_0");
-    //thevarlist.push_back("MVA_nJets_CharmL");
-    thevarlist.push_back("MVA_dRZc");
-    thevarlist.push_back("MVA_NJets_CSVv2M");
     thevarlist.push_back("MVA_dPhiZWlep");
-    thevarlist.push_back("MVA_dRWlepb"); // very good
-    thevarlist.push_back("MVA_dPhiWlepb"); // very good
-    thevarlist.push_back("MVA_dRZWlep");
-    thevarlist.push_back("MVA_mlb");
-    
-   //  thevarlist.push_back("MVA_FCNCtop_M");
-    
-    // thevarlist.push_back("MVA_dPhiZc");
-    
-    //thevarlist.push_back("MVA_Zboson_pt");
-    */
-    
-    
- // }
+    //thevarlist.push_back("MVA_SMtop_rap");
+    // check me
+    thevarlist.push_back("MVA_Zboson_M");
+    thevarlist.push_back("MVA_dRZb");
+    // thevarlist.push_back("MVA_TotalInvMass_jet");
+  }
+  
+  
+  /*
+  thevarlist.push_back("MVA_Zboson_pt");
+  thevarlist.push_back("MVA_SMtop_eta");
+  thevarlist.push_back("MVA_mlb");
+  thevarlist.push_back("MVA_dPhiWlepb");
+  thevarlist.push_back("MVA_charge_asym");
+  thevarlist.push_back("MVA_TotalInvMass_lep");
+  thevarlist.push_back("MVA_bdiscCSVv2_jet_0");
+ thevarlist.push_back("MVA_deltaRWlepJet_max");
+ thevarlist.push_back("MVA_deltaRWlepJet_min");
+  thevarlist.push_back("MVA_ptWQ");
+  thevarlist.push_back("MVA_Zboson_M");
+  thevarlist.push_back("MVA_SMtop_rap");
+  thevarlist.push_back("MVA_Wlep_Charge");
 
+  thevarlist.push_back("MVA_dPhiZWlep");
+  thevarlist.push_back("MVA_NJets_CSVv2M");
+  thevarlist.push_back("MVA_SMtop_M");
+thevarlist.push_back("MVA_dRWlepb");
+thevarlist.push_back("MVA_TotalHt_lep");
+  thevarlist.push_back("MVA_bdiscCSVv2_jet_1");
+  thevarlist.push_back("MVA_FCNCtop_M");
+  thevarlist.push_back("MVA_dRZc");
+  thevarlist.push_back("MVA_dPhiZb");
+  thevarlist.push_back("MVA_dRSMFCNCtop");
+  thevarlist.push_back("MVA_dRZb");
+  thevarlist.push_back("MVA_FCNCtop_eta");
+
+
+  thevarlist.push_back("MVA_Bdis_Lightjet");
+  thevarlist.push_back("MVA_dRSMjetLightjet");
+ thevarlist.push_back("MVA_dRZWlep");
+  thevarlist.push_back("MVA_TotalInvMass_jet");
+//}
+*/
+  
+  
   
  
   
